@@ -1,47 +1,73 @@
 package sarik.dev.foodwaveproject.entity.auth;
 
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import sarik.dev.foodwaveproject.entity.Address;
-import sarik.dev.foodwaveproject.entity.Auditable;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+import java.util.HashSet;
+import java.util.Set;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+import lombok.Data;
+import sarik.dev.foodwaveproject.entity.Address;
+import sarik.dev.foodwaveproject.entity.Cart;
+
+
 @Entity
 @Table(name = "auth_users")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class AuthUser {
 
-public class AuthUser extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long userId;
 
+    @Size(min = 5, max = 20, message = "First Name must be between 5 and 30 characters long")
+    @Pattern(regexp = "^[a-zA-Z]*$", message = "First Name must not contain numbers or special characters")
+    private String firstName;
+
+    @Size(min = 5, max = 20, message = "Last Name must be between 5 and 30 characters long")
+    @Pattern(regexp = "^[a-zA-Z]*$", message = "Last Name must not contain numbers or special characters")
+    private String lastName;
+
+    @Size(min = 10, max = 10, message = "Mobile Number must be exactly 10 digits long")
+    @Pattern(regexp = "^\\d{10}$", message = "Mobile Number must contain only Numbers")
+    private String mobileNumber;
+
+    @Email
     @Column(unique = true, nullable = false)
-    private String username;
-
-    @Column(nullable = false)
-    private String password;
-
-    private boolean isActive;
-
-    @Column(nullable = false, unique = true)
     private String email;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "auth_user_roles",
-            joinColumns = @JoinColumn(name = "auth_user_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "auth_role_id", referencedColumnName = "id")
-    )
-    private List<AuthRole> roles = new ArrayList<>();
+    private String password;
 
-    @OneToOne(fetch = FetchType.EAGER)
-    private Address address;
+    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.EAGER)
+    @JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Set<AuthRole> roles = new HashSet<>();
+
+    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @JoinTable(name = "user_address", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "address_id"))
+    private List<Address> addresses = new ArrayList<>();
+
+    @OneToOne(mappedBy = "user", cascade = { CascadeType.PERSIST, CascadeType.MERGE }, orphanRemoval = true)
+    private Cart cart;
+
 }

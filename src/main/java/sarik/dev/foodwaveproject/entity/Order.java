@@ -1,62 +1,39 @@
 package sarik.dev.foodwaveproject.entity;
 
-
-import jakarta.persistence.CollectionTable;
-import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.MapKeyJoinColumn;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-import java.time.LocalDateTime;
-import java.util.Map;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
-
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
 @Entity
+@Table(name = "orders")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Order {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
-    @Column(nullable = false)
-    private Long userId;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long orderId;
+	
+	@Email
+	@Column(nullable = false)
+	private String email;
 
-    @Column(nullable = false)
-    private LocalDateTime createdAt;
+	@OneToMany(mappedBy = "order", cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+	private List<OrderItem> orderItems = new ArrayList<>();
 
-    @Column(nullable = false)
-    private LocalDateTime deliveredAt;
-
-    @Column(nullable = false)
-    private Status status;
-
-    @ElementCollection
-    @CollectionTable(name = "order_products", joinColumns = @JoinColumn(name = "order_id"))
-    @MapKeyJoinColumn(name = "product_id") // Map kaliti sifatida `Product` ishlatiladi
-    private Map<Product, Integer> products;
-
-    @Column(nullable = false)
-    private String location;
-
-    @Column(nullable = false)
-    private String userPhone;
-
-    @Column(nullable = false)
-    private String userEmail;
-
-    private String userMessage;
-
-    @Column(nullable = false)
-    private Long price;
+	private LocalDate orderDate;
+	
+	@OneToOne
+	@JoinColumn(name = "payment_id")
+	private Payment payment;
+	
+	private Double totalAmount;
+	private String orderStatus;
 }
