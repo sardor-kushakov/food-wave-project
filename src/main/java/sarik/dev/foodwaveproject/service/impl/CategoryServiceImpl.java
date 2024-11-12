@@ -67,6 +67,14 @@ public class CategoryServiceImpl implements CategoryService {
         categoryRepository.deleteById(id);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public CategoryResponseDTO getCategoryByName(String name) {
+        return categoryRepository.findByCategoryName(name)
+                .map(this::mapToDTO)
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found with name: " + name));
+    }
+
     private CategoryResponseDTO mapToDTO(Category category) {
         return new CategoryResponseDTO(category.getCategoryId(), category.getCategoryName());
     }

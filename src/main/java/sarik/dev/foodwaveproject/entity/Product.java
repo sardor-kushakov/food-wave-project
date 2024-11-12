@@ -46,7 +46,8 @@ public class Product {
     @OneToMany(mappedBy = "product", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<OrderItem> orderItems = new ArrayList<>();
 
-    @OneToMany(fetch = FetchType.EAGER)
-    private List<Ingredients> ingredients = new ArrayList<>();
+//    @OneToMany(fetch = FetchType.EAGER)
+    @ElementCollection
+    private List<String> ingredients = new ArrayList<>();
 
 }
