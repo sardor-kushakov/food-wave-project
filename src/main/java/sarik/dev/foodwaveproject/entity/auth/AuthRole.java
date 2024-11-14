@@ -15,6 +15,6 @@ import lombok.NoArgsConstructor;
 public class AuthRole {
 
     @Id
-    private Long roleId;
+    private Long id;
     private String roleName;
 }
