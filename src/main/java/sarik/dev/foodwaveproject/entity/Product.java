@@ -60,6 +60,7 @@ public class Product {
     private Long discount = 0L;
 
     @OneToMany(mappedBy = "product", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ToString.Exclude
     private List<OrderItem> orderItems = new ArrayList<>();
 }
 
