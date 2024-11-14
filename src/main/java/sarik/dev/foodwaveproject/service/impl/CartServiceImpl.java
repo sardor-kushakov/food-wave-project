@@ -1,7 +1,9 @@
 package sarik.dev.foodwaveproject.service.impl;
 
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
+
 import sarik.dev.foodwaveproject.dto.cartDto.CartCreateDto;
 import sarik.dev.foodwaveproject.dto.cartDto.CartResponseDto;
 import sarik.dev.foodwaveproject.dto.cartDto.CartUpdateDto;
@@ -35,9 +37,10 @@ public class CartServiceImpl implements CartService {
 
     @Transactional
     @Override
-    public CartResponseDto createCart(CartCreateDto cartCreateDto) {
-        AuthUser user = authUserRepository.findById(cartCreateDto.getUserId())
+    public CartResponseDto createCart(@Valid CartCreateDto cartCreateDto) {
+        AuthUser user = authUserRepository.findById(1l)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        // TODO bu yerda session id kirib keladi session tayyor bo'lganda qoshaman
 
         Cart cart = new Cart();
         cart.setAuthUser(user);
@@ -50,7 +53,7 @@ public class CartServiceImpl implements CartService {
 
     @Transactional
     @Override
-    public CartResponseDto updateCart(CartUpdateDto cartUpdateDto) {
+    public CartResponseDto updateCart(@Valid CartUpdateDto cartUpdateDto) {
         Cart cart = cartRepository.findById(cartUpdateDto.getCartId())
                 .orElseThrow(() -> new IllegalArgumentException("Cart not found"));
 
@@ -75,7 +78,7 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public CartResponseDto getCartByUserId(Long userId) {
-        Cart cart = cartRepository.findByAuthUser_Id(userId)
+        Cart cart = cartRepository.findByAuthUserId(userId)
                 .orElseThrow(() -> new IllegalArgumentException("Cart not found"));
         return toCartResponseDto(cart);
     }
@@ -90,13 +93,13 @@ public class CartServiceImpl implements CartService {
     }
 
     private CartItem toCartItem(CartItemCreateDto dto) {
-        Product product = productRepository.findById(dto.getProductId())
+        Product product = productRepository.findById(Math.toIntExact(dto.getProductId()))
                 .orElseThrow(() -> new IllegalArgumentException("Product not found"));
 
         CartItem cartItem = new CartItem();
         cartItem.setProduct(product);
         cartItem.setQuantity(dto.getQuantity());
-        cartItem.setDiscount(dto.getDiscountSom() * 100); // So'mdan tiyinga aylantirish
+        cartItem.setDiscount(product.getDiscount());
         cartItem.setProductPrice(product.getPrice() - cartItem.getDiscount()); // Narxni tiyinda hisoblash
         return cartItem;
     }

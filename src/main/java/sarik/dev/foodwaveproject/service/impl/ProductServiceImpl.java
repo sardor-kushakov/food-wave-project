@@ -45,7 +45,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Optional<Product> getProductById(int id) {
+    public Optional<Product> getProductById(int id) {//TODO int o'ylash kerak hali
         if (productRepository.existsById(id)) {
            Optional<Product> product = productRepository.findById(id);
            if (product.isPresent()) {

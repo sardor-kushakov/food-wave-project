@@ -7,7 +7,5 @@ import java.util.List;
 
 @Data
 public class CartCreateDto {
-    @NotNull
-    private Long userId;
     private List<CartItemCreateDto> cartItems; // Savatchadagi har bir mahsulot uchun DTO
 }
