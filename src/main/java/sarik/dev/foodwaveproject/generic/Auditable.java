@@ -1,4 +1,4 @@
-package sarik.dev.foodwaveproject;
+package sarik.dev.foodwaveproject.generic;
 
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
