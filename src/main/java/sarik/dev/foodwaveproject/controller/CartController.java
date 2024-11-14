@@ -1,12 +1,15 @@
 package sarik.dev.foodwaveproject.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import sarik.dev.foodwaveproject.dto.cartDto.CartCreateDto;
 import sarik.dev.foodwaveproject.dto.cartDto.CartResponseDto;
 import sarik.dev.foodwaveproject.dto.cartDto.CartUpdateDto;
 import sarik.dev.foodwaveproject.service.CartService;
+
 
 @RestController
 @RequestMapping("/api/cart")
@@ -18,13 +21,13 @@ public class CartController {
     }
 
     @PostMapping
-    public ResponseEntity<CartResponseDto> createCart(@RequestBody CartCreateDto cartCreateDto) {
+    public ResponseEntity<CartResponseDto> createCart(@Valid @RequestBody CartCreateDto cartCreateDto) {
         CartResponseDto cart = cartService.createCart(cartCreateDto);
         return new ResponseEntity<>(cart, HttpStatus.CREATED);
     }
 
     @PutMapping
-    public ResponseEntity<CartResponseDto> updateCart(@RequestBody CartUpdateDto cartUpdateDto) {
+    public ResponseEntity<CartResponseDto> updateCart(@Valid @RequestBody  CartUpdateDto cartUpdateDto) {
         CartResponseDto cart = cartService.updateCart(cartUpdateDto);
         return new ResponseEntity<>(cart, HttpStatus.OK);
     }

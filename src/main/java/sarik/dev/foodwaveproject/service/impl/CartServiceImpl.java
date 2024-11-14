@@ -1,9 +1,11 @@
 package sarik.dev.foodwaveproject.service.impl;
 
 import jakarta.transaction.Transactional;
+
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
 
+import org.springframework.validation.annotation.Validated;
 import sarik.dev.foodwaveproject.dto.cartDto.CartCreateDto;
 import sarik.dev.foodwaveproject.dto.cartDto.CartResponseDto;
 import sarik.dev.foodwaveproject.dto.cartDto.CartUpdateDto;
@@ -22,7 +24,6 @@ import sarik.dev.foodwaveproject.service.CartService;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 @Service
 public class CartServiceImpl implements CartService {
     private final CartRepository cartRepository;
@@ -37,10 +38,11 @@ public class CartServiceImpl implements CartService {
 
     @Transactional
     @Override
-    public CartResponseDto createCart(@Valid CartCreateDto cartCreateDto) {
+    public CartResponseDto createCart(CartCreateDto cartCreateDto) {
         AuthUser user = authUserRepository.findById(1l)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
         // TODO bu yerda session id kirib keladi session tayyor bo'lganda qoshaman
+
 
         Cart cart = new Cart();
         cart.setAuthUser(user);
@@ -53,7 +55,7 @@ public class CartServiceImpl implements CartService {
 
     @Transactional
     @Override
-    public CartResponseDto updateCart(@Valid CartUpdateDto cartUpdateDto) {
+    public CartResponseDto updateCart(CartUpdateDto cartUpdateDto) {
         Cart cart = cartRepository.findById(cartUpdateDto.getCartId())
                 .orElseThrow(() -> new IllegalArgumentException("Cart not found"));
 
@@ -96,6 +98,12 @@ public class CartServiceImpl implements CartService {
         Product product = productRepository.findById(Math.toIntExact(dto.getProductId()))
                 .orElseThrow(() -> new IllegalArgumentException("Product not found"));
 
+        if (!product.isPresent()) {
+            throw new IllegalArgumentException("Product is not available: " + dto.getProductId());
+        }
+//        if (dto.getQuantity() > 100 || dto.getQuantity() < 0) {
+//            throw new IllegalArgumentException("Quantity exceeds 100");
+//        }
         CartItem cartItem = new CartItem();
         cartItem.setProduct(product);
         cartItem.setQuantity(dto.getQuantity());

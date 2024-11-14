@@ -1,6 +1,9 @@
 package sarik.dev.foodwaveproject.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,6 +26,7 @@ public class CartItem {
 	@ManyToOne
 	@JoinColumn(name = "product_id")
 	private Product product;
+
 
 	private Integer quantity;
 	private long discount;

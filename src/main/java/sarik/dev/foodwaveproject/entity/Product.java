@@ -37,7 +37,7 @@ public class Product {
 
     private String image;
 
-    @Size(min = 6, message = "Product description must contain at least 6 characters")
+//    @Size(min = 6, message = "Product description must contain at least 6 characters")
     private String description;
 
     @ElementCollection
