@@ -17,10 +17,9 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-
 public class CreateProductDto {
     private String productName;
-    private double price;
+    private Long price;
     private String image;
     private String description;
     private List<String> ingredients = new ArrayList<>();

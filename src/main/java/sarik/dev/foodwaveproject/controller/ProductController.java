@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import sarik.dev.foodwaveproject.dto.productDto.CreateProductDto;
 import sarik.dev.foodwaveproject.dto.categoryDto.CategoryResponseDTO;
+import sarik.dev.foodwaveproject.dto.productDto.UpdateIsPresentProductDto;
 import sarik.dev.foodwaveproject.entity.Product;
 import sarik.dev.foodwaveproject.mapping.CategoryMapper;
 import sarik.dev.foodwaveproject.mapping.IngredientMapper;
@@ -61,6 +62,15 @@ public class ProductController {
         return new ResponseEntity<>(productService.getAllProducts(), HttpStatus.OK);
     }
 
+    @GetMapping("/{categoryName}/products")
+    public ResponseEntity<List<Product>> getProductsByCategory(@PathVariable String categoryName) {
+        List<Product> products = productService.getProductsByCategoryName(categoryName);
+        if (products.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No products found for the specified category");
+        }
+        return new ResponseEntity<>(products, HttpStatus.OK);
+    }
+
     @DeleteMapping("/{id}")
     public void deleteProductById(@PathVariable int id) {
         productService.deleteProductById(id);
@@ -74,4 +84,14 @@ public class ProductController {
             return new ResponseEntity<>(product.get(), HttpStatus.OK);
         }else throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found");
     }
+
+    @PutMapping("/{id}/isPresent")
+    public ResponseEntity<Product> updateProductIsPresent(@PathVariable int id, @RequestBody UpdateIsPresentProductDto dto) {
+        Optional<Product> product = productService.getProductById(id);
+        if (product.isPresent()) {
+           product.get().setPresent(dto.isPresent());
+           return new ResponseEntity<>(product.get(), HttpStatus.OK);
+        }else throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found");
+    }
 }
+

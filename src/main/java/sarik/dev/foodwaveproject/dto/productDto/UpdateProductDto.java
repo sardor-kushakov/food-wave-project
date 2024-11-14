@@ -21,7 +21,7 @@ import java.util.List;
 
 public class UpdateProductDto {
     private String productName;
-    private double price;
+    private Long price;
     private String image;
     private String description;
     private List<String> ingredients = new ArrayList<>();

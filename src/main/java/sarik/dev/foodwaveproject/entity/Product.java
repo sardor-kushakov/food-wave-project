@@ -1,62 +1,65 @@
 package sarik.dev.foodwaveproject.entity;
-
 import jakarta.persistence.*;
-import jakarta.validation.Valid;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.validation.annotation.Validated;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
-@Table(name = "products")
-@Data
+
+
+
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
+@Getter
+@Setter
+@Entity
+@Table(name = "products")
 public class Product {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotBlank
-    @Size(min = 3, message = "Product name must contain atleast 3 characters")
+    @Size(min = 3, message = "Product name must contain at least 3 characters")
+    @Column(nullable = false)
     private String productName;
 
     @Positive
-    private double price;
+    @Column(nullable = false)
+    private Long price;
 
     private String image;
 
     @NotBlank
-    @Size(min = 6, message = "Product description must contain atleast 6 characters")
+    @Size(min = 6, message = "Product description must contain at least 6 characters")
     private String description;
 
     @NotEmpty
     @ElementCollection
+    @Column(nullable = false)
     private List<String> ingredients = new ArrayList<>();
 
     @ManyToOne
-    @JoinColumn(name = "category_id")
+    @JoinColumn(name = "category_id" , nullable = false)
     private Category category;
 
-    ///////////////////////
-    private Integer quantity;
-    private double discount;
-    private double specialPrice;
+    @Column(nullable = false)
+    private boolean isPresent = false;
 
-//    @OneToMany(mappedBy = "product", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
-//    private List<CartItem> products = new ArrayList<>();
+    @Column(nullable = false)
+    private Long discount = 0L;
 
     @OneToMany(mappedBy = "product", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<OrderItem> orderItems = new ArrayList<>();
-    ////////////////////////
-
-
 }
+

@@ -12,4 +12,5 @@ public interface ProductService {
     Optional<Product> getProductById(int id);
     Product updateProduct(CreateProductDto dto, Product product);
     void deleteProductById(int id);
+    List<Product> getProductsByCategoryName(String categoryName);
 }
