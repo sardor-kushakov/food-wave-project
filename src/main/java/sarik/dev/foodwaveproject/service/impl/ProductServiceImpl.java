@@ -5,9 +5,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import sarik.dev.foodwaveproject.dto.categoryDto.CategoryResponseDTO;
 import sarik.dev.foodwaveproject.dto.productDto.CreateProductDto;
+import sarik.dev.foodwaveproject.dto.productDto.ProductResponseDto;
+import sarik.dev.foodwaveproject.dto.productDto.UpdateDiscountProductDto;
+import sarik.dev.foodwaveproject.dto.productDto.UpdateIsPresentProductDto;
 import sarik.dev.foodwaveproject.entity.Category;
 import sarik.dev.foodwaveproject.entity.Product;
 import sarik.dev.foodwaveproject.exception.ResourceNotFoundException;
+import sarik.dev.foodwaveproject.mapping.ProductMapper;
 import sarik.dev.foodwaveproject.repository.CategoryRepository;
 import sarik.dev.foodwaveproject.repository.ProductRepository;
 import sarik.dev.foodwaveproject.service.ProductService;
@@ -19,40 +23,47 @@ import java.util.Optional;
 public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
-    private final CategoryServiceImpl categoryService;
+    private final ProductMapper productMapper;
 
-    public ProductServiceImpl(ProductRepository productRepository, CategoryRepository categoryRepository, CategoryServiceImpl categoryService) {
+    public ProductServiceImpl(ProductRepository productRepository, CategoryRepository categoryRepository, CategoryServiceImpl categoryService, ProductMapper productMapper) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
-        this.categoryService = categoryService;
+        this.productMapper = productMapper;
     }
 
     @Override
     public Product createProduct(Product product) {
-        product.setPrice(product.getPrice()*100);
-        product.setDiscount(product.getDiscount()*100);
+        product.setPrice(product.getPrice() * 100);
+        product.setDiscount(product.getDiscount() * 100);
         return productRepository.save(product);
     }
 
     @Override
-    public List<Product> getAllProducts() {
+    public List<ProductResponseDto> getAllProducts() {
         List<Product> products = productRepository.findAll();
         for (Product product : products) {
-            product.setPrice(product.getPrice()/100);
-            product.setDiscount(product.getDiscount()/100);
+            product.setPrice(product.getPrice() / 100);
+            product.setDiscount(product.getDiscount() / 100);
         }
-        return products;
+        if (products.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        } else {
+            return productMapper.toProductResponseDtoList(products);
+        }
     }
 
+//    @Override
+//    public Product getProductById(Long id) {
+//        Product product = productRepository.findById(Math.toIntExact(id)).orElseThrow(() -> new ResourceNotFoundException("Product not found"));
+//        product.setPrice(product.getPrice() / 100);
+//        return product;
+//    }
     @Override
-    public Optional<Product> getProductById(int id) {
-        if (productRepository.existsById(id)) {
-           Optional<Product> product = productRepository.findById(id);
-           if (product.isPresent()) {
-               product.get().setPrice(product.get().getPrice()/100);
-               return Optional.of(product.get());
-           }else throw new ResourceNotFoundException("Product not found");
-        }else throw new ResourceNotFoundException("Product not found");
+    public Product getProductById(Long id) {
+        Product product = productRepository.findById(Math.toIntExact(id))
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
+        product.setPrice(product.getPrice() / 100);
+        return product;
     }
 
     @Override
@@ -67,10 +78,22 @@ public class ProductServiceImpl implements ProductService {
         return productRepository.save(product);
     }
 
+    @Override
+    public Product updateProductIsPresent(UpdateIsPresentProductDto dto, Product product) {
+        product.setPresent(dto.isPresent());
+        return productRepository.save(product);
+    }
 
     @Override
-    public void deleteProductById(int id) {
-       productRepository.deleteById(id);
+    public Product updateProductDiscount(UpdateDiscountProductDto dto, Product product) {
+        product.setDiscount(dto.getDiscount());
+        return productRepository.save(product);
+    }
+
+
+    @Override
+    public void deleteProductById(Long id) {
+        productRepository.deleteById(Math.toIntExact(id));
     }
 
     @Override
@@ -81,8 +104,8 @@ public class ProductServiceImpl implements ProductService {
         }
         List<Product> products = productRepository.findByCategory(category.get());
         for (Product product : products) {
-            product.setPrice(product.getPrice()/100);
-            product.setDiscount(product.getDiscount()/100);
+            product.setPrice(product.getPrice() / 100);
+            product.setDiscount(product.getDiscount() / 100);
         }
         return products;
     }

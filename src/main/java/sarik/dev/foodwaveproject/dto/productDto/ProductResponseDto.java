@@ -10,33 +10,42 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import sarik.dev.foodwaveproject.dto.CategoryDto;
+import sarik.dev.foodwaveproject.entity.Category;
+import sarik.dev.foodwaveproject.entity.OrderItem;
 
 import java.util.ArrayList;
 import java.util.List;
-
 @Getter
 @Setter
-@ToString
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
-public class CreateProductDto {
-    @NotBlank(message = "Product name must not be blank")
+@ToString
+public class ProductResponseDto {
+
+    private Long id;
+
+    @NotBlank
     @Size(min = 3, message = "Product name must contain at least 3 characters")
     private String productName;
 
-    @Positive(message = "Price must be a positive number")
+    @Positive
     private Long price;
 
     private String image;
 
-    @NotBlank(message = "Description must not be blank")
+    @NotBlank
     @Size(min = 6, message = "Product description must contain at least 6 characters")
     private String description;
 
-    @NotEmpty(message = "Ingredients list must not be empty")
+    @NotEmpty
     private List<String> ingredients = new ArrayList<>();
 
-    private CategoryDto category;
+    private Category category;
+
+    private boolean isPresent;
+
+    private Long discount = 0L;
+
+    private List<OrderItem> orderItems = new ArrayList<>();
 }
