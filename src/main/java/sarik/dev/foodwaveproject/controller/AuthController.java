@@ -1,22 +1,32 @@
 package sarik.dev.foodwaveproject.controller;
 
 
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import sarik.dev.foodwaveproject.configuration.JwtTokenUtil;
+import sarik.dev.foodwaveproject.dto.authUserDto.AuthUserResponseDTO;
 import sarik.dev.foodwaveproject.dto.authUserDto.CreateAuthUserDTO;
+import sarik.dev.foodwaveproject.dto.authUserDto.UpdateAuthUserDTO;
 import sarik.dev.foodwaveproject.dto.requestDto.LoginRequest;
 import sarik.dev.foodwaveproject.dto.requestDto.OtpRequest;
+import sarik.dev.foodwaveproject.generic.BaseResponse;
 import sarik.dev.foodwaveproject.service.authUser.AuthUserServiceImpl;
 import sarik.dev.foodwaveproject.service.otp.OtpService;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("/api/auth/v1")
+@RequestMapping("/api/auth")
 public class AuthController {
 
     private final AuthUserServiceImpl authUserServiceImpl;
@@ -60,4 +70,36 @@ public class AuthController {
             return ResponseEntity.status(401).body("Noto'g'ri yoki muddati o'tgan OTP.");
         }
     }
+
+    @PostMapping("/create")
+    public BaseResponse<AuthUserResponseDTO> createUser(@Valid @RequestBody CreateAuthUserDTO dto){
+        AuthUserResponseDTO user = authUserServiceImpl.registerUser(dto);
+        return new BaseResponse<>(user);
+    }
+
+    @GetMapping("/all")
+    public BaseResponse<List<AuthUserResponseDTO>> getUsers(){
+        List<AuthUserResponseDTO> allUsers = authUserServiceImpl.getAllUsers();
+        return new BaseResponse<>(allUsers);
+    }
+
+    @GetMapping("/{id}")
+    public BaseResponse<AuthUserResponseDTO> getUserById(@PathVariable Long id){
+        AuthUserResponseDTO user = authUserServiceImpl.getUserById(id);
+        return new BaseResponse<>(user);
+    }
+
+    @PatchMapping("/update/{id}")
+    public BaseResponse<AuthUserResponseDTO> updateUser(@PathVariable Long id,@Valid @RequestBody UpdateAuthUserDTO updateAuthUserDTO){
+        AuthUserResponseDTO user = authUserServiceImpl.updateUser(id, updateAuthUserDTO);
+        return new BaseResponse<>(user);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<Void> deleteUserById(@PathVariable Long id){
+        authUserServiceImpl.deleteUserById(id);
+        return ResponseEntity.noContent().build();
+    }
+
+
 }

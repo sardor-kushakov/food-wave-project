@@ -1,9 +1,7 @@
 package sarik.dev.foodwaveproject.service;
 
 
-import sarik.dev.foodwaveproject.dto.categoryDto.CategoryCreateDTO;
-import sarik.dev.foodwaveproject.dto.categoryDto.CategoryResponseDTO;
-import sarik.dev.foodwaveproject.dto.categoryDto.CategoryUpdateDTO;
+
 
 import java.util.List;
 
