@@ -29,22 +29,17 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank
-    @Size(min = 3, message = "Product name must contain at least 3 characters")
     @Column(nullable = false)
     private String productName;
 
-    @Positive
     @Column(nullable = false)
     private Long price;
 
     private String image;
 
-    @NotBlank
     @Size(min = 6, message = "Product description must contain at least 6 characters")
     private String description;
 
-    @NotEmpty
     @ElementCollection
     @Column(nullable = false)
     private List<String> ingredients = new ArrayList<>();
