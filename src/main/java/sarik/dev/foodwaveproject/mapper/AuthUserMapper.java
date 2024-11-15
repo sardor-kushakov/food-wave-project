@@ -14,7 +14,7 @@ import sarik.dev.foodwaveproject.entity.auth.AuthUser;
 
 import java.util.List;
 
-@Mapper
+@Mapper(componentModel = "spring")
 public interface AuthUserMapper {
 
 
