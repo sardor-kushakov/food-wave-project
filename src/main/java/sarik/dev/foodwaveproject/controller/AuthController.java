@@ -19,7 +19,6 @@ import sarik.dev.foodwaveproject.dto.authUserDto.CreateAuthUserDTO;
 import sarik.dev.foodwaveproject.dto.authUserDto.UpdateAuthUserDTO;
 import sarik.dev.foodwaveproject.dto.requestDto.LoginRequest;
 import sarik.dev.foodwaveproject.dto.requestDto.OtpRequest;
-import sarik.dev.foodwaveproject.generic.BaseResponse;
 import sarik.dev.foodwaveproject.service.authUser.AuthUserServiceImpl;
 import sarik.dev.foodwaveproject.service.otp.OtpService;
 
@@ -72,27 +71,27 @@ public class AuthController {
     }
 
     @PostMapping("/create")
-    public BaseResponse<AuthUserResponseDTO> createUser(@Valid @RequestBody CreateAuthUserDTO dto){
+    public ResponseEntity<AuthUserResponseDTO> createUser(@Valid @RequestBody CreateAuthUserDTO dto){
         AuthUserResponseDTO user = authUserServiceImpl.registerUser(dto);
-        return new BaseResponse<>(user);
+        return ResponseEntity.ok(user);
     }
 
     @GetMapping("/all")
-    public BaseResponse<List<AuthUserResponseDTO>> getUsers(){
+    public ResponseEntity<List<AuthUserResponseDTO>> getUsers(){
         List<AuthUserResponseDTO> allUsers = authUserServiceImpl.getAllUsers();
-        return new BaseResponse<>(allUsers);
+        return ResponseEntity.ok(allUsers);
     }
 
     @GetMapping("/{id}")
-    public BaseResponse<AuthUserResponseDTO> getUserById(@PathVariable Long id){
+    public ResponseEntity<AuthUserResponseDTO> getUserById(@PathVariable Long id){
         AuthUserResponseDTO user = authUserServiceImpl.getUserById(id);
-        return new BaseResponse<>(user);
+        return ResponseEntity.ok(user);
     }
 
     @PatchMapping("/update/{id}")
-    public BaseResponse<AuthUserResponseDTO> updateUser(@PathVariable Long id,@Valid @RequestBody UpdateAuthUserDTO updateAuthUserDTO){
+    public ResponseEntity<AuthUserResponseDTO> updateUser(@PathVariable Long id,@Valid @RequestBody UpdateAuthUserDTO updateAuthUserDTO){
         AuthUserResponseDTO user = authUserServiceImpl.updateUser(id, updateAuthUserDTO);
-        return new BaseResponse<>(user);
+        return ResponseEntity.ok(user);
     }
 
     @DeleteMapping("/delete/{id}")
