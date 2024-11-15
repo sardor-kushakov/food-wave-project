@@ -37,14 +37,12 @@ public class SecurityConfiguration {
     private final JwtTokenUtil jwtTokenUtil;
     private final OTPAuthenticationProvider otpAuthenticationProvider;
 
-
     public static final String[] WHITE_LIST = {
             "/api/**",
             "/swagger-ui/**",
             "/swagger-resources/**",
             "/v3/api-docs/**",
     };
-
 
     public SecurityConfiguration(ObjectMapper objectMapper, UserDetailsService userDetailsService, JwtTokenUtil jwtTokenUtil, OTPAuthenticationProvider otpAuthenticationProvider) {
         this.objectMapper = objectMapper;
@@ -55,21 +53,18 @@ public class SecurityConfiguration {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
-        http.
-                csrf(AbstractHttpConfigurer::disable)
+        http
+                .csrf(AbstractHttpConfigurer::disable)
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))  // Enable CORS configuration
                 .authorizeHttpRequests(httpReqConf ->
                         httpReqConf.requestMatchers(WHITE_LIST).permitAll()
-                                .anyRequest()
-                                .fullyAuthenticated()
+                                .anyRequest().authenticated()
                 )
                 .sessionManagement(sessionConf -> sessionConf.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(exHanConfig -> exHanConfig.authenticationEntryPoint(authenticationEntryPoint())
                         .accessDeniedHandler(accessDeniedHandler()))
                 .addFilterBefore(new JwtTokenFilter(jwtTokenUtil, userDetailsService), UsernamePasswordAuthenticationFilter.class);
         return http.build();
-
-
     }
 
     @Bean
@@ -88,31 +83,22 @@ public class SecurityConfiguration {
         return authenticationProvider;
     }
 
-
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
+
+        // Allow specific origins (frontend URLs)
         corsConfiguration.setAllowedOriginPatterns(List.of(
-                "http://localhost:8080",
-                "http://localhost:9090"
+                "http://localhost:8080",  // Frontend
+                "http://localhost:9090"   // Backend
         ));
 
-        corsConfiguration.setAllowedHeaders(List.of("*"
-                /*"Accept",
-                "Content-Type",
-                "Authorization"*/
-
-        ));
-
-        corsConfiguration.setAllowedMethods(List.of(
-                /*"PUT,DELETE", "POST", "PUT"*/"*"
-
-        ));
+        corsConfiguration.setAllowedHeaders(List.of("*")); // Allow all headers
+        corsConfiguration.setAllowedMethods(List.of("*")); // Allow all HTTP methods (GET, POST, PUT, DELETE, etc.)
+        corsConfiguration.setAllowCredentials(true);        // Allow cookies/authorization headers
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", corsConfiguration);
-       /* source.registerCorsConfiguration("/api/v2/**", configuration2);
-        source.registerCorsConfiguration("/api/v3/**", configuration3);*/
+        source.registerCorsConfiguration("/**", corsConfiguration);  // Apply to all endpoints
 
         return source;
     }
@@ -148,8 +134,4 @@ public class SecurityConfiguration {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
-
-
-
 }

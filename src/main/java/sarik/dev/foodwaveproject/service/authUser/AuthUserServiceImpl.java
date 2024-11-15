@@ -38,7 +38,7 @@ public class AuthUserServiceImpl implements AuthUserService {
         AuthUser user = new AuthUser();
         user.setEmail(userDTO.email());
         user.setPassword(passwordEncoder.encode(userDTO.password()));
-        user.setName(user.getName());
+        user.setName(userDTO.name());
         AuthUser saved = userRepository.save(user);
         return authUserMapper.toResponseDTO(saved);
     }
