@@ -25,9 +25,6 @@ public class SessionUser {
             throw new UserNotAuthenticatedException("Foydalanuvchi ma'lumoti noto'g'ri!");
     }
 
-   /* public Long getCurrentUserId(){
-        return getCurrentUser().getId();
-    }*/
 
 
 }

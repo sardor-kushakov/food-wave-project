@@ -1,4 +1,4 @@
-package sarik.dev.foodwaveproject.dto;
+package sarik.dev.foodwaveproject.generic;
 
 import lombok.Getter;
 
