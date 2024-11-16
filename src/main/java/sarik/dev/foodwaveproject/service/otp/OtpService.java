@@ -62,6 +62,8 @@ public class OtpService {
     }
 
     public boolean validateOTP(String email, String otpCode) {
+        /*
+        return otpRepository.existsByCodeAndEmailNotExpired(email,otpCode,LocalDateTime.now()).i;
         Optional<Otp> otpOptional = otpRepository.findByEmail(email);
 
         if (otpOptional.isPresent()) {
@@ -70,8 +72,12 @@ public class OtpService {
                 otpRepository.delete(otp);
                 return true;
             }
-        }
-        return false;
+        }*/
+
+
+        return otpRepository.findByEmail(email)
+                .filter(otp -> otp.getOtpCode().equals(otpCode) && otp.getExpirationTime().isAfter(LocalDateTime.now()))
+                .isPresent();
     }
 }
 

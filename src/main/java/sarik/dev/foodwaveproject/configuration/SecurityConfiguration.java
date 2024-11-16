@@ -38,7 +38,6 @@ public class SecurityConfiguration {
     private final OTPAuthenticationProvider otpAuthenticationProvider;
 
     public static final String[] WHITE_LIST = {
-            "/api/**",
             "/swagger-ui/**",
             "/swagger-resources/**",
             "/v3/api-docs/**",

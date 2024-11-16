@@ -40,7 +40,7 @@ public class FoodWaveProjectApplication {
         return new OpenAPI()
                 .info(new Info()
                         .title("Food Wave Project")
-                        .description("Pullik Project")
+                        .description("Project")
                         .version("10")
                         .contact(new Contact()
                                 .name("42")
@@ -58,7 +58,7 @@ public class FoodWaveProjectApplication {
                                 .url("http://localhost:9090").description("Production Server"),
                         new Server()
                                 .url("http://localhost:8080").description("Test Server")
-                )).addSecurityItem(new SecurityRequirement().addList("basicAuth", "bearerAuth"))
+                )).addSecurityItem(new SecurityRequirement().addList( "bearerAuth"))
                 .components(new Components()
 //                        .addSecuritySchemes("basicAuth", new SecurityScheme()
 //                                .name("basicAuth")
