@@ -14,11 +14,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import sarik.dev.foodwaveproject.configuration.JwtTokenUtil;
-import sarik.dev.foodwaveproject.dto.authUserDto.AuthUserResponseDTO;
-import sarik.dev.foodwaveproject.dto.authUserDto.CreateAuthUserDTO;
-import sarik.dev.foodwaveproject.dto.authUserDto.UpdateAuthUserDTO;
-import sarik.dev.foodwaveproject.dto.requestDto.LoginRequest;
-import sarik.dev.foodwaveproject.dto.requestDto.OtpRequest;
+import sarik.dev.foodwaveproject.dto.auth.AuthUserResponseDto;
+import sarik.dev.foodwaveproject.dto.auth.CreateAuthUserDto;
+import sarik.dev.foodwaveproject.dto.auth.UpdateAuthUserDto;
+import sarik.dev.foodwaveproject.dto.request.LoginRequest;
+import sarik.dev.foodwaveproject.dto.request.OtpRequest;
 import sarik.dev.foodwaveproject.service.authUser.AuthUserServiceImpl;
 import sarik.dev.foodwaveproject.service.otp.OtpService;
 
@@ -41,7 +41,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody CreateAuthUserDTO dto) {
+    public ResponseEntity<String> register(@RequestBody CreateAuthUserDto dto) {
         authUserServiceImpl.registerUser(dto);
         otpService.sendOtp(dto.email());
         return ResponseEntity.ok("OTP yuborildi. Iltimos, tekshiring.");
@@ -71,26 +71,26 @@ public class AuthController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<AuthUserResponseDTO> createUser(@Valid @RequestBody CreateAuthUserDTO dto){
-        AuthUserResponseDTO user = authUserServiceImpl.registerUser(dto);
+    public ResponseEntity<AuthUserResponseDto> createUser(@Valid @RequestBody CreateAuthUserDto dto){
+        AuthUserResponseDto user = authUserServiceImpl.registerUser(dto);
         return ResponseEntity.ok(user);
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<AuthUserResponseDTO>> getUsers(){
-        List<AuthUserResponseDTO> allUsers = authUserServiceImpl.getAllUsers();
+    public ResponseEntity<List<AuthUserResponseDto>> getUsers(){
+        List<AuthUserResponseDto> allUsers = authUserServiceImpl.getAllUsers();
         return ResponseEntity.ok(allUsers);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<AuthUserResponseDTO> getUserById(@PathVariable Long id){
-        AuthUserResponseDTO user = authUserServiceImpl.getUserById(id);
+    public ResponseEntity<AuthUserResponseDto> getUserById(@PathVariable Long id){
+        AuthUserResponseDto user = authUserServiceImpl.getUserById(id);
         return ResponseEntity.ok(user);
     }
 
     @PatchMapping("/update/{id}")
-    public ResponseEntity<AuthUserResponseDTO> updateUser(@PathVariable Long id,@Valid @RequestBody UpdateAuthUserDTO updateAuthUserDTO){
-        AuthUserResponseDTO user = authUserServiceImpl.updateUser(id, updateAuthUserDTO);
+    public ResponseEntity<AuthUserResponseDto> updateUser(@PathVariable Long id, @Valid @RequestBody UpdateAuthUserDto updateAuthUserDTO){
+        AuthUserResponseDto user = authUserServiceImpl.updateUser(id, updateAuthUserDTO);
         return ResponseEntity.ok(user);
     }
 

@@ -1,28 +1,42 @@
 package sarik.dev.foodwaveproject.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import sarik.dev.foodwaveproject.enums.PaymentMethod;
+import sarik.dev.foodwaveproject.enums.PaymentStatus;
+
+import java.time.LocalDateTime;
 
 @Entity
-@Data
 @Table(name = "payments")
-@AllArgsConstructor
+@Getter
+@Setter
 @NoArgsConstructor
-public class Payment {
+@AllArgsConstructor
+public class Payment extends Auditable {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long paymentId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	@OneToOne(mappedBy = "payment", cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-	private Order order;
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "order_id", nullable = false)
+    private Order order;
 
-	@NotBlank
-	@Size(min = 4, message = "Payment method must contain atleast 4 characters")
-	private String paymentMethod;
+    @Column(nullable = false)
+    private Long amount;
 
+    @Column(nullable = false)
+    private LocalDateTime paymentTime = LocalDateTime.now();
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private PaymentStatus status = PaymentStatus.PENDING;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private PaymentMethod paymentMethod;
 }

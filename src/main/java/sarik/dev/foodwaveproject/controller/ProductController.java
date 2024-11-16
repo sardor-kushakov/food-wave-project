@@ -13,11 +13,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
-import sarik.dev.foodwaveproject.dto.productDto.CreateProductDto;
-import sarik.dev.foodwaveproject.dto.categoryDto.CategoryResponseDTO;
-import sarik.dev.foodwaveproject.dto.productDto.ProductResponseDto;
-import sarik.dev.foodwaveproject.dto.productDto.UpdateDiscountProductDto;
-import sarik.dev.foodwaveproject.dto.productDto.UpdateIsPresentProductDto;
+import sarik.dev.foodwaveproject.dto.product.CreateProductDto;
+import sarik.dev.foodwaveproject.dto.category.CategoryResponseDto;
+import sarik.dev.foodwaveproject.dto.product.ProductResponseDto;
+import sarik.dev.foodwaveproject.dto.product.UpdateDiscountProductDto;
+import sarik.dev.foodwaveproject.dto.product.UpdateIsPresentProductDto;
 import sarik.dev.foodwaveproject.entity.Product;
 import sarik.dev.foodwaveproject.mapping.CategoryMapper;
 import sarik.dev.foodwaveproject.mapping.IngredientMapper;
@@ -28,7 +28,6 @@ import sarik.dev.foodwaveproject.service.ProductService;
 import sarik.dev.foodwaveproject.service.impl.ProductServiceImpl;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("api/product")
@@ -49,7 +48,7 @@ public class ProductController {
     @Transactional
     @PostMapping()
     public ResponseEntity<ProductResponseDto> addProduct(@Valid @RequestBody CreateProductDto dto) {
-        CategoryResponseDTO category = categoryService.getCategoryByName(dto.getCategory().getName());
+        CategoryResponseDto category = categoryService.getCategoryByName(dto.getCategory().getName());
         if (category == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found");
         }

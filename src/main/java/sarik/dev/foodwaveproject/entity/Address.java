@@ -1,58 +1,35 @@
 package sarik.dev.foodwaveproject.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
-import sarik.dev.foodwaveproject.entity.auth.AuthUser;
-
-import java.util.ArrayList;
-import java.util.List;
+import lombok.Setter;
 
 @Entity
 @Table(name = "addresses")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Address {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long addressId;
-	private String street;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	@NotBlank
-	@Size(min = 5, message = "Building name must contain atleast 5 characters")
-	private String buildingName;
+    @Column(nullable = false)
+    private String street;
 
-	@NotBlank
-	@Size(min = 4, message = "City name must contain atleast 4 characters")
-	private String city;
+    @Column(nullable = false)
+    private String city;
 
-	@NotBlank
-	@Size(min = 2, message = "State name must contain atleast 2 characters")
-	private String state;
+    @Column(nullable = false)
+    private String district;
 
-	@NotBlank
-	@Size(min = 2, message = "Country name must contain atleast 2 characters")
-	private String country;
+    @Column(nullable = false)
+    private String country;
 
-	@NotBlank
-	@Size(min = 6, message = "Pincode must contain atleast 6 characters")
-	private String pincode;
-
-	@ManyToMany(mappedBy = "addresses")
-	private List<AuthUser> authUsers = new ArrayList<>();
-
-	public Address(String country, String state, String city, String pincode, String street, String buildingName) {
-		this.country = country;
-		this.state = state;
-		this.city = city;
-		this.pincode = pincode;
-		this.street = street;
-		this.buildingName = buildingName;
-	}
-
+    @Column
+    private String additionalInfo;
 }

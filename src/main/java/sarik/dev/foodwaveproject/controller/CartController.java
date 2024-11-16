@@ -3,11 +3,10 @@ package sarik.dev.foodwaveproject.controller;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import sarik.dev.foodwaveproject.dto.cartDto.CartCreateDto;
-import sarik.dev.foodwaveproject.dto.cartDto.CartResponseDto;
-import sarik.dev.foodwaveproject.dto.cartDto.CartUpdateDto;
+import sarik.dev.foodwaveproject.dto.cart.CartCreateDto;
+import sarik.dev.foodwaveproject.dto.cart.CartResponseDto;
+import sarik.dev.foodwaveproject.dto.cart.CartUpdateDto;
 import sarik.dev.foodwaveproject.service.CartService;
 
 

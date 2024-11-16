@@ -2,7 +2,6 @@ package sarik.dev.foodwaveproject.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,23 +11,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Table(name = "carts")
 @Getter
 @Setter
-@Table(name = "carts")
 @NoArgsConstructor
 @AllArgsConstructor
-public class Cart {
+public class Cart extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long cartId;
+    private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private AuthUser authUser;
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id", referencedColumnName = "userId", nullable = false)
+    private AuthUser user;
 
-    @OneToMany(mappedBy = "cart", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CartItem> cartItems = new ArrayList<>();
 
-    private Long totalPrice;
+    @Transient
+    private Long totalPrice = 0L; // Savatning jami narxi, bazada saqlanmaydi
 }

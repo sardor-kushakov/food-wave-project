@@ -1,19 +1,19 @@
 package sarik.dev.foodwaveproject.service.authUser;
 
-import sarik.dev.foodwaveproject.dto.authUserDto.AuthUserResponseDTO;
-import sarik.dev.foodwaveproject.dto.authUserDto.CreateAuthUserDTO;
-import sarik.dev.foodwaveproject.dto.authUserDto.UpdateAuthUserDTO;
+import sarik.dev.foodwaveproject.dto.auth.AuthUserResponseDto;
+import sarik.dev.foodwaveproject.dto.auth.CreateAuthUserDto;
+import sarik.dev.foodwaveproject.dto.auth.UpdateAuthUserDto;
 
 import java.util.List;
 
 public interface AuthUserService {
-    AuthUserResponseDTO createUser(CreateAuthUserDTO createAuthUserDTO);
+    AuthUserResponseDto createUser(CreateAuthUserDto createAuthUserDTO);
 
-    AuthUserResponseDTO getUserById(Long id);
+    AuthUserResponseDto getUserById(Long id);
 
-    List<AuthUserResponseDTO> getAllUsers();
+    List<AuthUserResponseDto> getAllUsers();
 
-    AuthUserResponseDTO updateUser(Long id, UpdateAuthUserDTO updateAuthUserDTO);
+    AuthUserResponseDto updateUser(Long id, UpdateAuthUserDto updateAuthUserDTO);
 
     void deleteUserById(Long id);
 }

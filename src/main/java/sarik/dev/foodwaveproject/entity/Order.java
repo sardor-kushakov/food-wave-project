@@ -1,15 +1,14 @@
 package sarik.dev.foodwaveproject.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import sarik.dev.foodwaveproject.entity.auth.AuthUser;
+import sarik.dev.foodwaveproject.enums.OrderStatus;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,29 +18,26 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Order {
+public class Order extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long orderId;
+    private Long id;
 
-    @Email
-    @Column(nullable = false)
-    private String email;
-
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
-    private AuthUser user; // Session user assignment
+    private AuthUser customer;
 
-    @OneToMany(mappedBy = "order", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    private List<OrderItem> orderItems;
+    @Column(nullable = false)
+    private LocalDateTime orderDate = LocalDateTime.now();
 
-    private LocalDate orderDate;
+    @Column(nullable = false)
+    private Long totalAmount;
 
-    @OneToOne
-    @JoinColumn(name = "payment_id")
-    private Payment payment;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private OrderStatus status = OrderStatus.PENDING;
 
-    private Double totalAmount;
-    private String orderStatus;
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OrderItem> orderItems = new ArrayList<>();
 }

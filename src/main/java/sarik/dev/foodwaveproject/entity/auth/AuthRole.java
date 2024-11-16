@@ -1,20 +1,27 @@
 package sarik.dev.foodwaveproject.entity.auth;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import sarik.dev.foodwaveproject.entity.Auditable;
 
 @Entity
-@Data
 @Table(name = "auth_roles")
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class AuthRole {
+public class AuthRole extends Auditable {
 
     @Id
-    private Long id;
-    private String roleName;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    @Column(nullable = false)
+    private String name;
+
+    @Column(nullable = false)
+    private String description;
 }

@@ -2,12 +2,12 @@ package sarik.dev.foodwaveproject.service.impl;
 
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
-import sarik.dev.foodwaveproject.dto.cartDto.CartCreateDto;
-import sarik.dev.foodwaveproject.dto.cartDto.CartResponseDto;
-import sarik.dev.foodwaveproject.dto.cartDto.CartUpdateDto;
-import sarik.dev.foodwaveproject.dto.cartItemDto.CartItemCreateDto;
-import sarik.dev.foodwaveproject.dto.cartItemDto.CartItemResponseDto;
-import sarik.dev.foodwaveproject.dto.cartItemDto.CartItemUpdateDto;
+import sarik.dev.foodwaveproject.dto.cart.CartCreateDto;
+import sarik.dev.foodwaveproject.dto.cart.CartResponseDto;
+import sarik.dev.foodwaveproject.dto.cart.CartUpdateDto;
+import sarik.dev.foodwaveproject.dto.cart.CartItemCreateDto;
+import sarik.dev.foodwaveproject.dto.cart.CartItemResponseDto;
+import sarik.dev.foodwaveproject.dto.cart.CartItemUpdateDto;
 import sarik.dev.foodwaveproject.entity.Cart;
 import sarik.dev.foodwaveproject.entity.CartItem;
 import sarik.dev.foodwaveproject.entity.Product;

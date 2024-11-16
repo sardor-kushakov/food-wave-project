@@ -2,8 +2,8 @@ package sarik.dev.foodwaveproject.mapping;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import sarik.dev.foodwaveproject.dto.productDto.CreateProductDto;
-import sarik.dev.foodwaveproject.dto.productDto.ProductResponseDto;
+import sarik.dev.foodwaveproject.dto.product.CreateProductDto;
+import sarik.dev.foodwaveproject.dto.product.ProductResponseDto;
 import sarik.dev.foodwaveproject.entity.Product;
 
 import java.util.List;

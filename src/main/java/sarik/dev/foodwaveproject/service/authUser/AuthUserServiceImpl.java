@@ -4,16 +4,15 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sarik.dev.foodwaveproject.dto.authUserDto.AuthUserResponseDTO;
-import sarik.dev.foodwaveproject.dto.authUserDto.CreateAuthUserDTO;
-import sarik.dev.foodwaveproject.dto.authUserDto.UpdateAuthUserDTO;
+import sarik.dev.foodwaveproject.dto.auth.AuthUserResponseDto;
+import sarik.dev.foodwaveproject.dto.auth.CreateAuthUserDto;
+import sarik.dev.foodwaveproject.dto.auth.UpdateAuthUserDto;
 import sarik.dev.foodwaveproject.entity.auth.AuthUser;
 import sarik.dev.foodwaveproject.exception.ResourceNotFoundException;
 import sarik.dev.foodwaveproject.mapper.AuthUserMapper;
 import sarik.dev.foodwaveproject.repository.AuthUserRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class AuthUserServiceImpl implements AuthUserService {
@@ -30,7 +29,7 @@ public class AuthUserServiceImpl implements AuthUserService {
 
 
     @Transactional
-    public AuthUserResponseDTO registerUser(CreateAuthUserDTO userDTO) {
+    public AuthUserResponseDto registerUser(CreateAuthUserDto userDTO) {
         if (userRepository.existsByEmail(userDTO.email())) {
             throw new IllegalArgumentException("Email already exists");
         }
@@ -45,7 +44,7 @@ public class AuthUserServiceImpl implements AuthUserService {
 
     @Override
     @Transactional
-    public AuthUserResponseDTO createUser(CreateAuthUserDTO createAuthUserDTO) {
+    public AuthUserResponseDto createUser(CreateAuthUserDto createAuthUserDTO) {
         AuthUser user = new AuthUser();
         AuthUser authUser = authUserMapper.partialCreateAuthUser(createAuthUserDTO, user);
         AuthUser saved = userRepository.save(authUser);
@@ -54,7 +53,7 @@ public class AuthUserServiceImpl implements AuthUserService {
 
     @Override
     @Transactional
-    public AuthUserResponseDTO getUserById(Long id) {
+    public AuthUserResponseDto getUserById(Long id) {
         AuthUser user = userRepository.findById(id)
                 .orElseThrow(()-> new EntityNotFoundException("user not found"));
        return authUserMapper.toResponseDTO(user);
@@ -62,14 +61,14 @@ public class AuthUserServiceImpl implements AuthUserService {
 
     @Override
     @Transactional
-    public List<AuthUserResponseDTO> getAllUsers() {
+    public List<AuthUserResponseDto> getAllUsers() {
         List<AuthUser> all = userRepository.findAll();
         return authUserMapper.toResponseDTOList(all);
     }
 
     @Override
     @Transactional
-    public AuthUserResponseDTO updateUser(Long id, UpdateAuthUserDTO updateAuthUserDTO) {
+    public AuthUserResponseDto updateUser(Long id, UpdateAuthUserDto updateAuthUserDTO) {
         AuthUser user = userRepository.findById(id)
                 .orElseThrow(()-> new EntityNotFoundException("user not found"));
         AuthUser authUser = authUserMapper.partialUpdateAuthUser(updateAuthUserDTO, user);

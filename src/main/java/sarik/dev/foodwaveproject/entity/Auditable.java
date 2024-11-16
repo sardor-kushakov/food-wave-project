@@ -1,33 +1,29 @@
 package sarik.dev.foodwaveproject.entity;
 
-import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.CurrentTimestamp;
 import org.hibernate.annotations.SourceType;
 import org.hibernate.generator.EventType;
-import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.LastModifiedBy;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import sarik.dev.foodwaveproject.annotation.CurrentUserId;
 
 import java.time.LocalDateTime;
 
-
 @Getter
+@Setter
 @MappedSuperclass
-@EntityListeners(AuditingEntityListener.class)
-public class Auditable {
+public abstract class Auditable {
 
     @CurrentTimestamp(event = EventType.INSERT, source = SourceType.VM)
     private LocalDateTime createdAt;
 
-    @CreatedBy
+    @CurrentUserId(event = EventType.INSERT)
     private Long createdBy;
 
     @CurrentTimestamp(event = EventType.UPDATE, source = SourceType.VM)
     private LocalDateTime updatedAt;
 
-    @LastModifiedBy
+    @CurrentUserId(event = EventType.UPDATE)
     private Long updatedBy;
-
 }
