@@ -6,10 +6,12 @@ import sarik.dev.foodwaveproject.entity.auth.AuthUser;
 
 import java.util.Optional;
 
+@Repository
+public interface AuthUserRepository extends JpaRepository<AuthUser, Long> {
 
-public interface AuthUserRepository extends JpaRepository<AuthUser,Long> {
-
+    // Foydalanuvchini email orqali topish
     Optional<AuthUser> findByEmail(String email);
 
+    // Email mavjudligini tekshirish
     boolean existsByEmail(String email);
 }

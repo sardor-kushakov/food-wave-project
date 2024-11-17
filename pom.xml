@@ -10,7 +10,7 @@
     </parent>
     <groupId>sarik.dev</groupId>
     <artifactId>food-wave-project</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0</version>
     <name>food-wave-project</name>
     <description>food-wave-project</description>
     <url/>
@@ -107,13 +107,13 @@
         <dependency>
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct</artifactId>
-            <version>${org.mapstruct.version}</version>
+            <version>1.5.5.Final</version> <!-- Yangi versiya -->
         </dependency>
-
         <dependency>
-            <groupId>org.mapstruct</groupId>  <!--bu qoshimcha plugns dagilarni yozmaslik uchun -->
+            <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct-processor</artifactId>
-            <version>${org.mapstruct.version}</version>
+            <version>1.5.5.Final</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 

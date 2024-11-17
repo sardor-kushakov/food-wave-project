@@ -1,19 +1,18 @@
 package sarik.dev.foodwaveproject.dto.order;
 
+import sarik.dev.foodwaveproject.dto.order.item.OrderItemResponseDto;
+import sarik.dev.foodwaveproject.enums.OrderStatus;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-
-import java.time.LocalDate;
+import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.List;
 
-@Data
-@AllArgsConstructor
-public class OrderResponseDto {
-    private Long orderId;
-    private String email;
-    private LocalDate orderDate;
-    private List<OrderItemDto> orderItems;
-    private double totalAmount;
-    private OrderStatus orderStatus;
+public record OrderResponseDto(
+        Long id,
+        Long customerId,
+        String customerName,
+        LocalDateTime orderDate,
+        Long totalAmount,
+        OrderStatus status,
+        List<OrderItemResponseDto> orderItems) implements Serializable {
 }

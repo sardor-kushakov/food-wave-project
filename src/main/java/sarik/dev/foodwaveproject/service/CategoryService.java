@@ -3,10 +3,6 @@ package sarik.dev.foodwaveproject.service;
 
 
 
-import sarik.dev.foodwaveproject.dto.category.CategoryCreateDto;
-import sarik.dev.foodwaveproject.dto.category.CategoryResponseDto;
-import sarik.dev.foodwaveproject.dto.category.CategoryUpdateDto;
-
 import java.util.List;
 
 public interface CategoryService {

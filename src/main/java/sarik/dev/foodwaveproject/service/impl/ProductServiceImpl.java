@@ -3,16 +3,10 @@ package sarik.dev.foodwaveproject.service.impl;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-import sarik.dev.foodwaveproject.dto.product.CreateProductDto;
-import sarik.dev.foodwaveproject.dto.product.ProductResponseDto;
-import sarik.dev.foodwaveproject.dto.product.UpdateDiscountProductDto;
-import sarik.dev.foodwaveproject.dto.product.UpdateIsPresentProductDto;
 import sarik.dev.foodwaveproject.entity.Category;
 import sarik.dev.foodwaveproject.entity.Product;
 import sarik.dev.foodwaveproject.exception.ResourceNotFoundException;
 import sarik.dev.foodwaveproject.mapping.ProductMapper;
-import sarik.dev.foodwaveproject.repository.CategoryRepository;
-import sarik.dev.foodwaveproject.repository.ProductRepository;
 import sarik.dev.foodwaveproject.service.ProductService;
 
 import java.util.List;

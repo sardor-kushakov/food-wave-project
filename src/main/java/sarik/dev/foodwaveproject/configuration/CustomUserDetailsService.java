@@ -1,15 +1,11 @@
 package sarik.dev.foodwaveproject.configuration;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import sarik.dev.foodwaveproject.entity.auth.AuthRole;
 import sarik.dev.foodwaveproject.entity.auth.AuthUser;
-import sarik.dev.foodwaveproject.repository.AuthRoleRepository;
-import sarik.dev.foodwaveproject.repository.AuthUserRepository;
 
 import java.util.Set;
 

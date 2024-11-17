@@ -25,6 +25,4 @@ public class SessionUser {
             throw new UserNotAuthenticatedException("Foydalanuvchi ma'lumoti noto'g'ri!");
     }
 
-
-
 }

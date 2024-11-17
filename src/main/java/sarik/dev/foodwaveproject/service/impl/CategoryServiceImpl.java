@@ -3,12 +3,8 @@ package sarik.dev.foodwaveproject.service.impl;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import sarik.dev.foodwaveproject.dto.category.CategoryCreateDto;
-import sarik.dev.foodwaveproject.dto.category.CategoryResponseDto;
-import sarik.dev.foodwaveproject.dto.category.CategoryUpdateDto;
 import sarik.dev.foodwaveproject.entity.Category;
 import sarik.dev.foodwaveproject.exception.ResourceNotFoundException;
-import sarik.dev.foodwaveproject.repository.CategoryRepository;
 import sarik.dev.foodwaveproject.service.CategoryService;
 
 import java.util.List;

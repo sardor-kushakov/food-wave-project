@@ -1,9 +1,6 @@
 package sarik.dev.foodwaveproject.service;
 
 
-import sarik.dev.foodwaveproject.dto.order.OrderCreateDto;
-import sarik.dev.foodwaveproject.dto.order.OrderResponseDto;
-
 import java.util.List;
 
 public interface OrderService {
