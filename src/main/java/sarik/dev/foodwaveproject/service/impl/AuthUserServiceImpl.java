@@ -1,16 +1,13 @@
-package sarik.dev.foodwaveproject.service.authUser;
+package sarik.dev.foodwaveproject.service.impl;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sarik.dev.foodwaveproject.dto.auth.AuthUserResponseDto;
-import sarik.dev.foodwaveproject.dto.auth.CreateAuthUserDto;
-import sarik.dev.foodwaveproject.dto.auth.UpdateAuthUserDto;
 import sarik.dev.foodwaveproject.entity.auth.AuthUser;
 import sarik.dev.foodwaveproject.exception.ResourceNotFoundException;
 import sarik.dev.foodwaveproject.mapper.AuthUserMapper;
-import sarik.dev.foodwaveproject.repository.AuthUserRepository;
+import sarik.dev.foodwaveproject.service.AuthUserService;
 
 import java.util.List;
 

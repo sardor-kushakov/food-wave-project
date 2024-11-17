@@ -1,8 +1,4 @@
-package sarik.dev.foodwaveproject.service.authUser;
-
-import sarik.dev.foodwaveproject.dto.auth.AuthUserResponseDto;
-import sarik.dev.foodwaveproject.dto.auth.CreateAuthUserDto;
-import sarik.dev.foodwaveproject.dto.auth.UpdateAuthUserDto;
+package sarik.dev.foodwaveproject.service;
 
 import java.util.List;
 
