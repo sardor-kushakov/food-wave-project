@@ -1,124 +1,83 @@
 package sarik.dev.foodwaveproject.service.impl;
 
-import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import sarik.dev.foodwaveproject.dto.cart.CartCreateDto;
+import sarik.dev.foodwaveproject.dto.cart.CartDto;
 import sarik.dev.foodwaveproject.dto.cart.CartResponseDto;
 import sarik.dev.foodwaveproject.dto.cart.CartUpdateDto;
-import sarik.dev.foodwaveproject.dto.cart.CartItemCreateDto;
-import sarik.dev.foodwaveproject.dto.cart.CartItemResponseDto;
-import sarik.dev.foodwaveproject.dto.cart.CartItemUpdateDto;
 import sarik.dev.foodwaveproject.entity.Cart;
-import sarik.dev.foodwaveproject.entity.CartItem;
-import sarik.dev.foodwaveproject.entity.Product;
 import sarik.dev.foodwaveproject.entity.auth.AuthUser;
+import sarik.dev.foodwaveproject.exception.ResourceNotFoundException;
+import sarik.dev.foodwaveproject.mapper.CartMapper;
 import sarik.dev.foodwaveproject.repository.AuthUserRepository;
 import sarik.dev.foodwaveproject.repository.CartRepository;
-import sarik.dev.foodwaveproject.repository.ProductRepository;
 import sarik.dev.foodwaveproject.service.CartService;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
+
 @Service
+@RequiredArgsConstructor
+@Transactional
 public class CartServiceImpl implements CartService {
+
     private final CartRepository cartRepository;
-    private final ProductRepository productRepository;
     private final AuthUserRepository authUserRepository;
+    private final CartMapper cartMapper;
 
-    public CartServiceImpl(CartRepository cartRepository, ProductRepository productRepository, AuthUserRepository authUserRepository) {
-        this.cartRepository = cartRepository;
-        this.productRepository = productRepository;
-        this.authUserRepository = authUserRepository;
-    }
-
-    @Transactional
     @Override
-    public CartResponseDto createCart(CartCreateDto cartCreateDto) {
-        AuthUser user = authUserRepository.findById(1l)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
-        // TODO bu yerda session id kirib keladi session tayyor bo'lganda qoshaman
+    public CartResponseDto create(CartCreateDto createDto) {
+        // Foydalanuvchini tekshirish
+        AuthUser user = authUserRepository.findById(createDto.userId())
+                .orElseThrow(() -> new ResourceNotFoundException("User", "ID", createDto.userId()));
 
+        // Savatni yaratish
+        Cart cart = cartMapper.fromCreateDto(createDto);
+        cart.setUser(user);
 
-        Cart cart = new Cart();
-        cart.setAuthUser(user);
-        cart.setCartItems(cartCreateDto.getCartItems().stream().map(this::toCartItem).collect(Collectors.toList()));
-        cart.setTotalPrice(calculateTotalPrice(cart.getCartItems())); // Tiyinda umumiy narx hisoblanadi
-
-        cartRepository.save(cart);
-        return toCartResponseDto(cart);
-    }
-
-    @Transactional
-    @Override
-    public CartResponseDto updateCart(CartUpdateDto cartUpdateDto) {
-        Cart cart = cartRepository.findById(cartUpdateDto.getCartId())
-                .orElseThrow(() -> new IllegalArgumentException("Cart not found"));
-
-        for (CartItemUpdateDto updateDto : cartUpdateDto.getCartItems()) {
-            Optional<CartItem> cartItemOpt = cart.getCartItems().stream()
-                    .filter(item -> item.getCartItemId().equals(updateDto.getCartItemId()))
-                    .findFirst();
-
-            if (cartItemOpt.isPresent()) {
-                CartItem cartItem = cartItemOpt.get();
-                cartItem.setQuantity(updateDto.getQuantity()); // Yangilangan miqdor
-                cartItem.setDiscount(updateDto.getDiscountSom() * 100); // So'mdan tiyinga o'zgartirish
-                cartItem.setProductPrice(cartItem.getProduct().getPrice() - cartItem.getDiscount()); // Narxni yangilash
-            }
-        }
-
-        cart.setTotalPrice(calculateTotalPrice(cart.getCartItems())); // Umumiy narxni qayta hisoblash
-        cartRepository.save(cart);
-
-        return toCartResponseDto(cart); // Yangilangan savatchani qaytarish
+        Cart savedCart = cartRepository.save(cart);
+        return cartMapper.toResponseDto(savedCart);
     }
 
     @Override
-    public CartResponseDto getCartByUserId(Long userId) {
-        Cart cart = cartRepository.findByAuthUserId(userId)
-                .orElseThrow(() -> new IllegalArgumentException("Cart not found"));
-        return toCartResponseDto(cart);
+    public CartDto getById(Long id) {
+        Cart cart = cartRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Cart", "ID", id));
+        return cartMapper.toDto(cart);
     }
 
     @Override
-    public void deleteCartById(Long cartId) {
-        if (cartRepository.existsById(cartId)) {
-            cartRepository.deleteById(cartId);
-        } else {
-            throw new IllegalArgumentException("Cart not found");
-        }
+    public CartResponseDto getByUserId(Long userId) {
+        Cart cart = cartRepository.findByUserId(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Cart", "User ID", userId));
+        return cartMapper.toResponseDto(cart);
     }
 
-    private CartItem toCartItem(CartItemCreateDto dto) {
-        Product product = productRepository.findById(Math.toIntExact(dto.getProductId()))
-                .orElseThrow(() -> new IllegalArgumentException("Product not found"));
-
-        if (!product.isPresent()) {
-            throw new IllegalArgumentException("Product is not available: " + dto.getProductId());
-        }
-//        if (dto.getQuantity() > 100 || dto.getQuantity() < 0) {
-//            throw new IllegalArgumentException("Quantity exceeds 100");
-//        }
-        CartItem cartItem = new CartItem();
-        cartItem.setProduct(product);
-        cartItem.setQuantity(dto.getQuantity());
-        cartItem.setDiscount(product.getDiscount());
-        cartItem.setProductPrice(product.getPrice() - cartItem.getDiscount()); // Narxni tiyinda hisoblash
-        return cartItem;
-    }
-
-    private long calculateTotalPrice(List<CartItem> cartItems) {
-        return cartItems.stream()
-                .mapToLong(item -> (item.getProductPrice() * item.getQuantity()))
-                .sum();
-    }
-
-    private CartResponseDto toCartResponseDto(Cart cart) {
-        List<CartItemResponseDto> cartItems = cart.getCartItems().stream()
-                .map(CartItemResponseDto::new)
+    @Override
+    public List<CartResponseDto> getAll() {
+        List<Cart> carts = cartRepository.findAll();
+        return carts.stream()
+                .map(cartMapper::toResponseDto)
                 .collect(Collectors.toList());
-        long totalPriceSom = cart.getTotalPrice() / 100; // Umumiy narxni so'mga aylantirish
-        return new CartResponseDto(cart.getCartId(), cart.getAuthUser().getId(), cartItems, totalPriceSom);
+    }
+
+    @Override
+    public CartResponseDto update(Long id, CartUpdateDto updateDto) {
+        Cart cart = cartRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Cart", "ID", id));
+
+        cartMapper.fromUpdateDto(updateDto, cart);
+
+        Cart updatedCart = cartRepository.save(cart);
+        return cartMapper.toResponseDto(updatedCart);
+    }
+
+    @Override
+    public void delete(Long id) {
+        Cart cart = cartRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Cart", "ID", id));
+        cartRepository.delete(cart);
     }
 }

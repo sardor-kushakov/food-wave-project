@@ -1,0 +1,21 @@
+annotation - Auditable uchun, createdBy va updatedBy uchun maxsus annotatsiya yaratilindi.
+
+generator - yuqoridagi annotation uchun kerakli bo'lgan class ni saqlaydi.
+
+entity - bitdi, ustozga tekshirtirish qoldi.
+
+enums - enumlar barchasi tayyor, funksionalliklarni ta'minlab beradi.
+
+dto - tayyor, (ustoz ko'rishi kerak) barcha funksionalliklarni ta'minlab bera oladi.
+
+mapper - barchasi yozildi va tugallandi, Xatolik yuzaga kelsa to'g'rilaymiz.
+
+repository - barchasi uchun yozildi, qo'shimcha metodlar kerak bo'lsa qo'shiladi.
+
+exception - tayyor, ustoz aytgan 1, 2, 3 larni yozib chiqish qoldi xalos.
+
+configuration - barchasini qaytadan ko'rib chiqish kerak.
+
+controller - hammasini ko'zdan kechirib, qaytadan optimal qilib yozib chiqish kerak.
+
+service -

@@ -5,7 +5,6 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import sarik.dev.foodwaveproject.entity.auth.AuthUser;
-import sarik.dev.foodwaveproject.exception.UserNotAuthenticatedException;
 
 @Component
 public class SessionUser {
@@ -24,7 +23,5 @@ public class SessionUser {
         } else
             throw new UserNotAuthenticatedException("Foydalanuvchi ma'lumoti noto'g'ri!");
     }
-
-
 
 }

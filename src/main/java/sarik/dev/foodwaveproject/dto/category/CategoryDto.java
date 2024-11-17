@@ -1,18 +1,14 @@
 package sarik.dev.foodwaveproject.dto.category;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import sarik.dev.foodwaveproject.dto.product.ProductDto;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@ToString
-@Builder
-public class CategoryDto {
-    private String name;
+import java.io.Serializable;
+import java.util.List;
+
+public record CategoryDto(
+        Long id,
+        String name,
+        String description,
+        boolean isActive,
+        List<ProductDto> products) implements Serializable {
 }

@@ -1,11 +1,14 @@
 package sarik.dev.foodwaveproject.dto.cart;
 
-import lombok.Data;
+import jakarta.validation.constraints.NotNull;
+import sarik.dev.foodwaveproject.dto.cart.item.CartItemUpdateDto;
 
+import java.io.Serializable;
 import java.util.List;
 
-@Data
-public class CartUpdateDto {
-    private Long cartId;
-    private List<CartItemUpdateDto> cartItems; // Har bir mahsulot uchun yangilanish ma'lumotlari
+public record CartUpdateDto(
+        @NotNull(message = "Cart ID cannot be null")
+        Long cartId,
+
+        List<CartItemUpdateDto> cartItems) implements Serializable {
 }

@@ -1,20 +1,21 @@
 package sarik.dev.foodwaveproject.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 import sarik.dev.foodwaveproject.entity.Otp;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+@Repository
 public interface OtpRepository extends JpaRepository<Otp, Long> {
 
-    Optional<Otp> findByEmail(String email);
-/*
+    // Foydalanuvchi ID va ishlatilmagan OTP bo'yicha qidirish
+    Optional<Otp> findByRecipientIdAndIsUsedFalse(Long userId);
 
-    @Query("select count(1) > 0 from Otp o where o.email = ?1 and o.otpCode = ?2 and o.expirationTime < ?3")
-    boolean existsByCodeAndEmailNotExpired(String email, String otpCode, LocalDateTime dateTime);
-*/
+    // Foydalanuvchi ID va kod bo'yicha qidirish
+    Optional<Otp> findByRecipientIdAndCode(Long userId, String code);
 
-    void deleteByEmail(String email);
+    // Amal qilish muddati o'tgan barcha OTPlarni o'chirish
+    void deleteByExpirationTimeBefore(LocalDateTime currentTime);
 }

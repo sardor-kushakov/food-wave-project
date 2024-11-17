@@ -10,9 +10,9 @@ import sarik.dev.foodwaveproject.entity.Product;
 import sarik.dev.foodwaveproject.mapping.CategoryMapper;
 import sarik.dev.foodwaveproject.mapping.IngredientMapper;
 import sarik.dev.foodwaveproject.mapping.ProductMapper;
-import sarik.dev.foodwaveproject.service.CategoryService;
-import sarik.dev.foodwaveproject.service.ProductService;
-import sarik.dev.foodwaveproject.service.impl.ProductServiceImpl;
+import sarik.dev.foodwaveproject.xer.inter.CategoryService;
+import sarik.dev.foodwaveproject.xer.inter.ProductService;
+import sarik.dev.foodwaveproject.xer.imp.ProductServiceImpl;
 
 import java.util.List;
 

@@ -5,10 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import sarik.dev.foodwaveproject.dto.category.CategoryCreateDto;
-import sarik.dev.foodwaveproject.dto.category.CategoryResponseDto;
-import sarik.dev.foodwaveproject.dto.category.CategoryUpdateDto;
-import sarik.dev.foodwaveproject.service.CategoryService;
+import sarik.dev.foodwaveproject.xer.inter.CategoryService;
 
 import java.util.List;
 

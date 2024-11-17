@@ -1,17 +1,17 @@
 package sarik.dev.foodwaveproject.dto.order;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotEmpty;
-import lombok.Data;
-import sarik.dev.foodwaveproject.dto.cart.CartItemCreateDto;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import sarik.dev.foodwaveproject.dto.order.item.OrderItemCreateDto;
 
+import java.io.Serializable;
 import java.util.List;
 
-@Data
-public class OrderCreateDto {
-    @Email
-    private String email;
+public record OrderCreateDto(
+        @NotNull(message = "Total amount cannot be null")
+        @Positive(message = "Total amount must be positive")
+        Long totalAmount,
 
-    @NotEmpty
-    private List<CartItemCreateDto> orderItems;
+        @NotNull(message = "Order items cannot be null")
+        List<OrderItemCreateDto> orderItems) implements Serializable {
 }

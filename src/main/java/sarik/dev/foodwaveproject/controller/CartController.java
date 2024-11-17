@@ -4,7 +4,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import sarik.dev.foodwaveproject.service.CartService;
+import sarik.dev.foodwaveproject.xer.inter.CartService;
 
 
 @RestController

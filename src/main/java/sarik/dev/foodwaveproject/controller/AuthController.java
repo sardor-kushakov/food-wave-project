@@ -7,9 +7,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 import sarik.dev.foodwaveproject.configuration.JwtTokenUtil;
-import sarik.dev.foodwaveproject.dto.request.LoginRequest;
-import sarik.dev.foodwaveproject.dto.request.OtpRequest;
-import sarik.dev.foodwaveproject.service.impl.AuthUserServiceImpl;
+import sarik.dev.foodwaveproject.xer.imp.AuthUserServiceImpl;
 import sarik.dev.foodwaveproject.service.otp.OtpService;
 
 import java.util.List;

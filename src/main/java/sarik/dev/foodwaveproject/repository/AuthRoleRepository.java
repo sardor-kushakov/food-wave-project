@@ -4,10 +4,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import sarik.dev.foodwaveproject.entity.auth.AuthRole;
 
-import java.util.Set;
+import java.util.Optional;
 
 @Repository
-public interface AuthRoleRepository extends JpaRepository<AuthRole,Long> {
+public interface AuthRoleRepository extends JpaRepository<AuthRole, Integer> {
 
-    Set<AuthRole> findAllById(Long userId);
+    // Nom orqali rolni topish
+    Optional<AuthRole> findByName(String name);
 }

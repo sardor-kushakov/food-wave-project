@@ -3,9 +3,7 @@ package sarik.dev.foodwaveproject.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import sarik.dev.foodwaveproject.dto.order.OrderCreateDto;
-import sarik.dev.foodwaveproject.dto.order.OrderResponseDto;
-import sarik.dev.foodwaveproject.service.OrderService;
+import sarik.dev.foodwaveproject.xer.inter.OrderService;
 
 import java.util.List;
 

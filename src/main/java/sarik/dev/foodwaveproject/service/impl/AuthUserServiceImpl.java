@@ -1,84 +1,102 @@
 package sarik.dev.foodwaveproject.service.impl;
 
-import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import sarik.dev.foodwaveproject.dto.auth.user.AuthUserDto;
+import sarik.dev.foodwaveproject.dto.auth.user.AuthUserResponseDto;
+import sarik.dev.foodwaveproject.dto.auth.user.AuthUserUpdateDto;
+import sarik.dev.foodwaveproject.dto.request.auth.LoginRequest;
+import sarik.dev.foodwaveproject.dto.request.auth.ProfileUpdateRequest;
+import sarik.dev.foodwaveproject.dto.request.auth.RegisterRequest;
 import sarik.dev.foodwaveproject.entity.auth.AuthUser;
+import sarik.dev.foodwaveproject.exception.AuthenticationException;
 import sarik.dev.foodwaveproject.exception.ResourceNotFoundException;
 import sarik.dev.foodwaveproject.mapper.AuthUserMapper;
+import sarik.dev.foodwaveproject.repository.AuthUserRepository;
 import sarik.dev.foodwaveproject.service.AuthUserService;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
+@Transactional
 public class AuthUserServiceImpl implements AuthUserService {
 
-    private final AuthUserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
+    private final AuthUserRepository authUserRepository;
     private final AuthUserMapper authUserMapper;
+    private final PasswordEncoder passwordEncoder;
 
-    public AuthUserServiceImpl(AuthUserRepository userRepository, PasswordEncoder passwordEncoder, AuthUserMapper authUserMapper) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.authUserMapper = authUserMapper;
+    @Override
+    public AuthUserResponseDto register(RegisterRequest registerRequest) {
+        // Yangi foydalanuvchini yaratish
+        AuthUser authUser = new AuthUser();
+        authUser.setName(registerRequest.name());
+        authUser.setEmail(registerRequest.email());
+        authUser.setPassword(passwordEncoder.encode(registerRequest.password()));
+        authUser.setVerified(registerRequest.isVerified());
+
+        AuthUser savedUser = authUserRepository.save(authUser);
+        return authUserMapper.toResponseDto(savedUser);
     }
 
+    @Override
+    public AuthUserDto login(LoginRequest loginRequest) {
+        // Email orqali foydalanuvchini topish
+        AuthUser authUser = authUserRepository.findByEmail(loginRequest.email())
+                .orElseThrow(() -> new AuthenticationException("Invalid email or password"));
 
-    @Transactional
-    public AuthUserResponseDto registerUser(CreateAuthUserDto userDTO) {
-        if (userRepository.existsByEmail(userDTO.email())) {
-            throw new IllegalArgumentException("Email already exists");
+        // Parolni tekshirish
+        if (!passwordEncoder.matches(loginRequest.password(), authUser.getPassword())) {
+            throw new AuthenticationException("Invalid email or password");
         }
 
-        AuthUser user = new AuthUser();
-        user.setEmail(userDTO.email());
-        user.setPassword(passwordEncoder.encode(userDTO.password()));
-        user.setName(userDTO.name());
-        AuthUser saved = userRepository.save(user);
-        return authUserMapper.toResponseDTO(saved);
+        return authUserMapper.toDto(authUser);
     }
 
     @Override
-    @Transactional
-    public AuthUserResponseDto createUser(CreateAuthUserDto createAuthUserDTO) {
-        AuthUser user = new AuthUser();
-        AuthUser authUser = authUserMapper.partialCreateAuthUser(createAuthUserDTO, user);
-        AuthUser saved = userRepository.save(authUser);
-        return authUserMapper.toResponseDTO(saved);
+    public AuthUserDto getById(Long id) {
+        AuthUser authUser = authUserRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "ID", id));
+        return authUserMapper.toDto(authUser);
     }
 
     @Override
-    @Transactional
-    public AuthUserResponseDto getUserById(Long id) {
-        AuthUser user = userRepository.findById(id)
-                .orElseThrow(()-> new EntityNotFoundException("user not found"));
-       return authUserMapper.toResponseDTO(user);
+    public List<AuthUserResponseDto> getAll() {
+        List<AuthUser> users = authUserRepository.findAll();
+        return users.stream()
+                .map(authUserMapper::toResponseDto)
+                .collect(Collectors.toList());
     }
 
     @Override
-    @Transactional
-    public List<AuthUserResponseDto> getAllUsers() {
-        List<AuthUser> all = userRepository.findAll();
-        return authUserMapper.toResponseDTOList(all);
+    public AuthUserResponseDto updateProfile(Long id, ProfileUpdateRequest profileUpdateRequest) {
+        AuthUser authUser = authUserRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "ID", id));
+
+        authUserMapper.updateFromProfileRequest(profileUpdateRequest, authUser);
+
+        AuthUser updatedUser = authUserRepository.save(authUser);
+        return authUserMapper.toResponseDto(updatedUser);
     }
 
     @Override
-    @Transactional
-    public AuthUserResponseDto updateUser(Long id, UpdateAuthUserDto updateAuthUserDTO) {
-        AuthUser user = userRepository.findById(id)
-                .orElseThrow(()-> new EntityNotFoundException("user not found"));
-        AuthUser authUser = authUserMapper.partialUpdateAuthUser(updateAuthUserDTO, user);
-        return authUserMapper.toResponseDTO(authUser);
+    public AuthUserResponseDto updateUser(Long id, AuthUserUpdateDto updateDto) {
+        AuthUser authUser = authUserRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "ID", id));
+
+        authUserMapper.fromUpdateDto(updateDto, authUser);
+
+        AuthUser updatedUser = authUserRepository.save(authUser);
+        return authUserMapper.toResponseDto(updatedUser);
     }
 
     @Override
-    @Transactional
-    public void deleteUserById(Long id) {
-        if (!userRepository.existsById(id)) {
-            throw new ResourceNotFoundException("User not found with id: " + id);
-        }
-        userRepository.deleteById(id);
+    public void delete(Long id) {
+        AuthUser authUser = authUserRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "ID", id));
+        authUserRepository.delete(authUser);
     }
 }
-
