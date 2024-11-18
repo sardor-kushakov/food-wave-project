@@ -1,5 +1,7 @@
 package sarik.dev.foodwaveproject.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -31,9 +33,9 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
+@Tag(name = "Product API", description = "API for product")
 @RequestMapping("api/product")
 public class ProductController {
-
     private final ProductMapper productMapper;
     private final ProductService productService;
     private final CategoryMapper categoryMapper;
@@ -48,6 +50,7 @@ public class ProductController {
 
     @Transactional
     @PostMapping()
+    @Operation(summary = "Create product", description = "Yangi product yaratish uchun endpoint")
     public ResponseEntity<ProductResponseDto> addProduct(@Valid @RequestBody CreateProductDto dto) {
         CategoryResponseDTO category = categoryService.getCategoryByName(dto.getCategory().getName());
         if (category == null) {
@@ -97,12 +100,6 @@ public class ProductController {
         } else throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found");
     }
 
-    //    @PutMapping("/{id}/isPresent")
-//    public ResponseEntity<ProductResponseDto> updateProductIsPresent(@PathVariable Long id, @RequestBody UpdateIsPresentProductDto dto) {
-//        Product product = productService.getProductById(id);
-//        Product product1 = productService.updateProductIsPresent(dto, product);
-//        return new ResponseEntity<>(productMapper.toProductResponseDto(product1), HttpStatus.OK);
-//    }
     @PutMapping("/{id}/isPresent")
     public ResponseEntity<ProductResponseDto> updateProductIsPresent(@PathVariable Long id, @RequestBody UpdateIsPresentProductDto dto) {
         Product product = productService.getProductById(id);

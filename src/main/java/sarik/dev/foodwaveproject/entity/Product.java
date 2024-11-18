@@ -56,5 +56,8 @@ public class Product {
 
     @OneToMany(mappedBy = "product", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<OrderItem> orderItems = new ArrayList<>();
+
+    @Column(nullable = false)
+    private int orderCount = 0;
 }
 
