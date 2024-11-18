@@ -18,4 +18,5 @@ public class OrderResponseDto {
     private List<OrderItemDto> orderItems;
     private double totalAmount;
     private OrderStatus orderStatus;
+
 }

@@ -167,7 +167,7 @@ public class OrderServiceImpl implements OrderService {
     private void validateStatusTransition(String currentStatus, String newStatus, String currentUserRole) {
         switch (currentStatus) {
             case "PLACED":
-                if (!newStatus.equals("CONFIRMED") || !currentUserRole.equals("ROLE_USER")) {
+                if (!newStatus.equals("CONFIRMED")  ) {
                     throw new IllegalStateException("Foydalanuvchi faqat PLACED holatidan CONFIRMED ga o'zgarishini tasdiqlashi mumkin.");
                 }
                 break;
