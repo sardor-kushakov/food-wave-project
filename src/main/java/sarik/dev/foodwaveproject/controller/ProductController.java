@@ -110,5 +110,9 @@ public class ProductController {
         Product updatedProduct = productService.updateProductDiscount(dto, existingProduct);
         return ResponseEntity.ok(productMapper.toProductResponseDto(updatedProduct));
     }
+    @GetMapping("/popularity")
+    public List<Product> getPopularProducts() {
+        return productService.getProductsByPopularity();
+    }
 }
 
