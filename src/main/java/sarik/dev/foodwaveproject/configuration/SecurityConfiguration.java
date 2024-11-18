@@ -42,12 +42,8 @@ public class SecurityConfiguration {
             "/api/auth/verify-otp",
             "/api/auth/register",
             "/api/auth/login",
-            "/swagger-ui/**",
-            "/swagger-resources/**",
+            "/swagger-ui/index.html",
             "/v3/api-docs/**",
-            "/api/auth/login",
-            "/api/auth/register",
-            "/api/auth/verify-otp",
             "/api/oauth2/**"
     };
 
@@ -76,10 +72,8 @@ public class SecurityConfiguration {
                             String email = authToken.getPrincipal().getAttribute("email");
                             String name = authToken.getPrincipal().getAttribute("name");
 
-                            // Generate JWT token
                             String jwtToken = jwtTokenUtil.generateToken(email);
 
-                            // Send token as JSON response
                             response.setContentType("application/json");
                             response.setCharacterEncoding("UTF-8");
                             objectMapper.writeValue(response.getWriter(),
@@ -110,18 +104,17 @@ public class SecurityConfiguration {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
 
-        // Allow specific origins (frontend URLs)
         corsConfiguration.setAllowedOriginPatterns(List.of(
-                "http://localhost:8080",  // Frontend
-                "http://localhost:9090"   // Backend
+                "http://localhost:8080",
+                "http://localhost:9090"
         ));
 
-        corsConfiguration.setAllowedHeaders(List.of("*")); // Allow all headers
-        corsConfiguration.setAllowedMethods(List.of("*")); // Allow all HTTP methods (GET, POST, PUT, DELETE, etc.)
-        corsConfiguration.setAllowCredentials(true);        // Allow cookies/authorization headers
+        corsConfiguration.setAllowedHeaders(List.of("*"));
+        corsConfiguration.setAllowedMethods(List.of("*"));
+        corsConfiguration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", corsConfiguration);  // Apply to all endpoints
+        source.registerCorsConfiguration("/**", corsConfiguration);
 
         return source;
     }
