@@ -1,22 +1,10 @@
 package sarik.dev.foodwaveproject.entity;
-import jakarta.persistence.*;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import jakarta.persistence.*;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
-
-
-
-
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
@@ -37,7 +25,7 @@ public class Product {
 
     private String image;
 
-    @Size(min = 6, message = "Product description must contain at least 6 characters")
+//    @Size(min = 6, message = "Product description must contain at least 6 characters")
     private String description;
 
     @ElementCollection
@@ -55,6 +43,7 @@ public class Product {
     private Long discount = 0L;
 
     @OneToMany(mappedBy = "product", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ToString.Exclude
     private List<OrderItem> orderItems = new ArrayList<>();
 
 
