@@ -15,6 +15,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
@@ -44,6 +45,10 @@ public class SecurityConfiguration {
             "/swagger-ui/**",
             "/swagger-resources/**",
             "/v3/api-docs/**",
+            "/api/auth/login",
+            "/api/auth/register",
+            "/api/auth/verify-otp",
+            "/api/oauth2/**"
     };
 
     public SecurityConfiguration(ObjectMapper objectMapper, UserDetailsService userDetailsService, JwtTokenUtil jwtTokenUtil, OTPAuthenticationProvider otpAuthenticationProvider) {
@@ -65,6 +70,22 @@ public class SecurityConfiguration {
                 .sessionManagement(sessionConf -> sessionConf.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(exHanConfig -> exHanConfig.authenticationEntryPoint(authenticationEntryPoint())
                         .accessDeniedHandler(accessDeniedHandler()))
+                .oauth2Login(oauth2 -> oauth2
+                        .successHandler((request, response, authentication) -> {
+                            OAuth2AuthenticationToken authToken = (OAuth2AuthenticationToken) authentication;
+                            String email = authToken.getPrincipal().getAttribute("email");
+                            String name = authToken.getPrincipal().getAttribute("name");
+
+                            // Generate JWT token
+                            String jwtToken = jwtTokenUtil.generateToken(email);
+
+                            // Send token as JSON response
+                            response.setContentType("application/json");
+                            response.setCharacterEncoding("UTF-8");
+                            objectMapper.writeValue(response.getWriter(),
+                                    new OAuth2LoginResponse(jwtToken, email, name));
+                        })
+                )
                 .addFilterBefore(new JwtTokenFilter(jwtTokenUtil, userDetailsService), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
@@ -136,4 +157,7 @@ public class SecurityConfiguration {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
+    private record OAuth2LoginResponse(String token, String email, String name) {}
+
 }
