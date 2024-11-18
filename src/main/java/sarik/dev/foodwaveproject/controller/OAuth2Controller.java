@@ -27,6 +27,7 @@ public class OAuth2Controller {
         return generateResponse(authToken);
     }
 
+
     @GetMapping("/callback/facebook")
     public Map<String, Object> handleFacebookLogin(OAuth2AuthenticationToken authToken) {
         return generateResponse(authToken);
