@@ -2,8 +2,10 @@ package sarik.dev.foodwaveproject.mapping;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import sarik.dev.foodwaveproject.dto.CategoryDto;
 import sarik.dev.foodwaveproject.dto.productDto.CreateProductDto;
 import sarik.dev.foodwaveproject.dto.productDto.ProductResponseDto;
+import sarik.dev.foodwaveproject.entity.Category;
 import sarik.dev.foodwaveproject.entity.Product;
 
 import java.util.List;
@@ -14,5 +16,9 @@ public interface ProductMapper {
 
     @Mapping(target = "isPresent", source = "present")
     ProductResponseDto toProductResponseDto(Product product);
+
+
+    ProductResponseDto toProductResponseDto(CreateProductDto product);
+
     List<ProductResponseDto> toProductResponseDtoList(List<Product> products);
 }
