@@ -1,5 +1,7 @@
 package sarik.dev.foodwaveproject.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -25,7 +27,6 @@ public class Product {
 
     private String image;
 
-//    @Size(min = 6, message = "Product description must contain at least 6 characters")
     private String description;
 
     @ElementCollection
@@ -44,6 +45,7 @@ public class Product {
 
     @OneToMany(mappedBy = "product", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @ToString.Exclude
+    @JsonIgnore
     private List<OrderItem> orderItems = new ArrayList<>();
 
 
