@@ -1,6 +1,8 @@
 package sarik.dev.foodwaveproject.service.authUser;
 
 import jakarta.persistence.EntityNotFoundException;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,7 +15,6 @@ import sarik.dev.foodwaveproject.mapper.AuthUserMapper;
 import sarik.dev.foodwaveproject.repository.AuthUserRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class AuthUserServiceImpl implements AuthUserService {
@@ -21,11 +22,13 @@ public class AuthUserServiceImpl implements AuthUserService {
     private final AuthUserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthUserMapper authUserMapper;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public AuthUserServiceImpl(AuthUserRepository userRepository, PasswordEncoder passwordEncoder, AuthUserMapper authUserMapper) {
+    public AuthUserServiceImpl(AuthUserRepository userRepository, PasswordEncoder passwordEncoder, AuthUserMapper authUserMapper, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authUserMapper = authUserMapper;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
 
@@ -84,5 +87,9 @@ public class AuthUserServiceImpl implements AuthUserService {
         }
         userRepository.deleteById(id);
     }
+
+
+
+
 }
 

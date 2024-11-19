@@ -56,9 +56,9 @@ public class AuthController {
         boolean isOtpValid = otpService.validateOTP(otpRequest.getEmail(), otpRequest.getOtpCode());
         if (isOtpValid) {
             String token = jwtTokenUtil.generateToken(otpRequest.getEmail());
-            return ResponseEntity.ok("Tasdiqlash muvaffaqiyatli. Token: " + token);
+            return ResponseEntity.ok(token);
         } else {
-            return ResponseEntity.status(401).body("Noto'g'ri yoki muddati o'tgan OTP.");
+            return ResponseEntity.status(401).build();
         }
     }
 
