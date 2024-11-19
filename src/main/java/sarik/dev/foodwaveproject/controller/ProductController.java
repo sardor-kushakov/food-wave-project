@@ -116,8 +116,17 @@ public class ProductController {
         return ResponseEntity.ok(productMapper.toProductResponseDto(updatedProduct));
     }
     @GetMapping("/popularity")
-    public List<Product> getPopularProducts() {
-        return productService.getProductsByPopularity();
+    public ResponseEntity<List<ProductResponseDto>> getPopularProducts() {
+        // ProductService orqali eng mashhur mahsulotlarni olish
+        List<ProductResponseDto> popularProducts = productService.getProductsByPopularity();
+
+        // Agar ro'yxatda mahsulotlar bo'lsa, 200 OK statusi bilan qaytarish
+        if (popularProducts != null && !popularProducts.isEmpty()) {
+            return ResponseEntity.ok(popularProducts);
+        }
+
+        // Agar ro'yxat bo'sh bo'lsa, 404 Not Found statusi bilan qaytarish
+        return ResponseEntity.notFound().build();
     }
 }
 

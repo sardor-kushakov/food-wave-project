@@ -47,5 +47,4 @@ public class ProductResponseDto {
 
     private Long discount = 0L;
 
-    private List<OrderItem> orderItems = new ArrayList<>();
 }

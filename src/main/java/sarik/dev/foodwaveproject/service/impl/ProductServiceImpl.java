@@ -125,15 +125,35 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<Product> getProductsByPopularity() {
+    public List<ProductResponseDto> getProductsByPopularity() {
+        // Popularlik bo'yicha ma'lumotlarni olish
         List<Object[]> popularityData = orderItemRepository.findProductsByPopularity();
 
+        // Har bir productId uchun ProductResponseDto ni yaratish
         return popularityData.stream()
                 .map(data -> {
-                    Long productId = (Long) data[0];
-                    return productRepository.findById(productId).orElse(null);
+                    Long productId = (Long) data[0];  // productId ni olish
+                    Product product = productRepository.findById(productId).orElse(null);
+
+                    if (product != null) {
+                        // ProductResponseDto ni yaratish
+                        ProductResponseDto productResponseDto = ProductResponseDto.builder()
+                                .id(product.getId())
+                                .productName(product.getProductName())
+                                .price(product.getPrice())
+                                .image(product.getImage())
+                                .description(product.getDescription())
+                                .ingredients(product.getIngredients())
+                                .category(product.getCategory())
+                                .isPresent(product.isPresent())
+                                .discount(product.getDiscount())
+                                .build();
+
+                        return productResponseDto;  // ProductResponseDto qaytarish
+                    }
+                    return null;  // Agar product mavjud bo'lmasa, null qaytarish
                 })
-                .filter(product -> product != null)
-                .collect(Collectors.toList());
+                .filter(productResponseDto -> productResponseDto != null)  // Null qiymatlarni filtrlash
+                .collect(Collectors.toList());  // Barcha ProductResponseDto larni ro'yxatga yig'ish
     }
 }
