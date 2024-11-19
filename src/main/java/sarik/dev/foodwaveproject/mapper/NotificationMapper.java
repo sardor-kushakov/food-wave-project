@@ -1,24 +1,19 @@
 package sarik.dev.foodwaveproject.mapper;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import sarik.dev.foodwaveproject.dto.notification.NotificationCreateDto;
 import sarik.dev.foodwaveproject.dto.notification.NotificationDto;
 import sarik.dev.foodwaveproject.dto.notification.NotificationResponseDto;
-import sarik.dev.foodwaveproject.dto.notification.NotificationUpdateDto;
 import sarik.dev.foodwaveproject.entity.Notification;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = AuthUserMapper.class)
 public interface NotificationMapper {
 
-    // NotificationCreateDto -> Notification
+    @Mapping(source = "userId", target = "user.id") // `userId` ni `user.id` ga o‘tkazish
     Notification fromCreateDto(NotificationCreateDto dto);
 
-    // Notification -> NotificationDto
     NotificationDto toDto(Notification notification);
 
-    // Notification -> NotificationResponseDto
     NotificationResponseDto toResponseDto(Notification notification);
-
-    // NotificationUpdateDto -> Notification
-    Notification fromUpdateDto(NotificationUpdateDto dto, Notification notification);
 }

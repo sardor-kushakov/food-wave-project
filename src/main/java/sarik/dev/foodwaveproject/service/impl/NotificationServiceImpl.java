@@ -8,7 +8,9 @@ import sarik.dev.foodwaveproject.dto.notification.NotificationDto;
 import sarik.dev.foodwaveproject.dto.notification.NotificationResponseDto;
 import sarik.dev.foodwaveproject.dto.notification.NotificationUpdateDto;
 import sarik.dev.foodwaveproject.entity.Notification;
+import sarik.dev.foodwaveproject.entity.auth.AuthUser;
 import sarik.dev.foodwaveproject.mapper.NotificationMapper;
+import sarik.dev.foodwaveproject.repository.AuthUserRepository;
 import sarik.dev.foodwaveproject.repository.NotificationRepository;
 import sarik.dev.foodwaveproject.service.NotificationService;
 
@@ -21,11 +23,22 @@ public class NotificationServiceImpl implements NotificationService {
 
     private final NotificationRepository repository;
     private final NotificationMapper mapper;
+    private final AuthUserRepository userRepository; // AuthUser ma’lumotini olish uchun
 
     @Override
     public NotificationResponseDto create(NotificationCreateDto dto) {
+        // AuthUser obyektini bazadan topish
+        AuthUser user = userRepository.findById(dto.userId())
+                .orElseThrow(() -> new RuntimeException("AuthUser not found with id: " + dto.userId()));
+
+        // Notification obyektini yaratish va userni o‘rnatish
         Notification notification = mapper.fromCreateDto(dto);
+        notification.setUser(user); // Userni o‘rnatish
+
+        // Bazaga saqlash
         notification = repository.save(notification);
+
+        // Javob qaytarish
         return mapper.toResponseDto(notification);
     }
 

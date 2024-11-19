@@ -35,6 +35,7 @@ public class FoodWaveProjectApplication {
     public AuditorAware<Long> auditorProvider(SessionUser sessionUser) {
         return () -> Optional.of(sessionUser.getCurrentUser().getId());
     }
+
     @Bean
     public OpenAPI springOpenAPI() {
         return new OpenAPI()
@@ -58,17 +59,17 @@ public class FoodWaveProjectApplication {
                                 .url("http://localhost:9090").description("Production Server"),
                         new Server()
                                 .url("http://localhost:8080").description("Test Server")
-                )).addSecurityItem(new SecurityRequirement().addList( "bearerAuth"))
+                )).addSecurityItem(new SecurityRequirement().addList("bearerAuth"))
                 .components(new Components()
 //                        .addSecuritySchemes("basicAuth", new SecurityScheme()
 //                                .name("basicAuth")
 //                                .type(SecurityScheme.Type.HTTP)
 //                                .scheme("basic"))
-                        .addSecuritySchemes("bearerAuth", new SecurityScheme()
-                                .name("bearerAuth")
-                                .type(SecurityScheme.Type.HTTP)
-                                .scheme("bearer")
-                                .bearerFormat("JWT"))
+                                .addSecuritySchemes("bearerAuth", new SecurityScheme()
+                                        .name("bearerAuth")
+                                        .type(SecurityScheme.Type.HTTP)
+                                        .scheme("bearer")
+                                        .bearerFormat("JWT"))
                 );
 
     }

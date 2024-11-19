@@ -10,7 +10,7 @@ import sarik.dev.foodwaveproject.dto.product.UpdateIsPresentProductDto;
 import sarik.dev.foodwaveproject.entity.Category;
 import sarik.dev.foodwaveproject.entity.Product;
 import sarik.dev.foodwaveproject.exception.ResourceNotFoundException;
-import sarik.dev.foodwaveproject.mapping.ProductMapper;
+import sarik.dev.foodwaveproject.mapper.ProductMapper;
 import sarik.dev.foodwaveproject.repository.CategoryRepository;
 import sarik.dev.foodwaveproject.repository.ProductRepository;
 import sarik.dev.foodwaveproject.service.ProductService;
@@ -51,7 +51,7 @@ public class ProductServiceImpl implements ProductService {
         }
     }
 
-//    @Override
+    //    @Override
 //    public Product getProductById(Long id) {
 //        Product product = productRepository.findById(Math.toIntExact(id)).orElseThrow(() -> new ResourceNotFoundException("Product not found"));
 //        product.setPrice(product.getPrice() / 100);

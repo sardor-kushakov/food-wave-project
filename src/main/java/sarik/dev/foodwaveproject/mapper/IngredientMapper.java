@@ -1,4 +1,4 @@
-package sarik.dev.foodwaveproject.mapping;
+package sarik.dev.foodwaveproject.mapper;
 
 import org.mapstruct.Mapper;
 import sarik.dev.foodwaveproject.dto.ingredient.IngredientDto;
