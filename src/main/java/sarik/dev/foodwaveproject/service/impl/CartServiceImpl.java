@@ -35,20 +35,27 @@ public class CartServiceImpl implements CartService {
     @Transactional
     @Override
     public CartResponseDto createCart(CartCreateDto cartCreateDto) {
-        AuthUser user = authUserRepository.findById(1l)
+        AuthUser user = authUserRepository.findById(1L)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
-        // TODO bu yerda session id kirib keladi session tayyor bo'lganda qoshaman
-
 
         Cart cart = new Cart();
         cart.setAuthUser(user);
-        cart.setCartItems(cartCreateDto.getCartItems().stream().map(this::toCartItem).collect(Collectors.toList()));
-        cart.setTotalPrice(calculateTotalPrice(cart.getCartItems())); // Tiyinda umumiy narx hisoblanadi
+
+        // CartItem ob'ektlarini o'rnatish va bog'lash
+        List<CartItem> cartItems = cartCreateDto.getCartItems().stream()
+                .map(dto -> {
+                    CartItem cartItem = toCartItem(dto);
+                    cartItem.setCart(cart); // `Cart` ni `CartItem` bilan bog'lash
+                    return cartItem;
+                }).collect(Collectors.toList());
+        cart.setCartItems(cartItems);
+
+        // Umumiy narxni hisoblash
+        cart.setTotalPrice(calculateTotalPrice(cartItems));
 
         cartRepository.save(cart);
         return toCartResponseDto(cart);
     }
-
     @Transactional
     @Override
     public CartResponseDto updateCart(CartUpdateDto cartUpdateDto) {
@@ -62,16 +69,16 @@ public class CartServiceImpl implements CartService {
 
             if (cartItemOpt.isPresent()) {
                 CartItem cartItem = cartItemOpt.get();
-                cartItem.setQuantity(updateDto.getQuantity()); // Yangilangan miqdor
-                cartItem.setDiscount(updateDto.getDiscountSom() * 100); // So'mdan tiyinga o'zgartirish
-                cartItem.setProductPrice(cartItem.getProduct().getPrice() - cartItem.getDiscount()); // Narxni yangilash
+                cartItem.setQuantity(updateDto.getQuantity());
+                cartItem.setDiscount(updateDto.getDiscountSom() * 100); // So'mdan tiyinga aylantirish
+                cartItem.setProductPrice(cartItem.getProduct().getPrice() - cartItem.getDiscount());
             }
         }
 
-        cart.setTotalPrice(calculateTotalPrice(cart.getCartItems())); // Umumiy narxni qayta hisoblash
+        cart.setTotalPrice(calculateTotalPrice(cart.getCartItems()));
         cartRepository.save(cart);
 
-        return toCartResponseDto(cart); // Yangilangan savatchani qaytarish
+        return toCartResponseDto(cart);
     }
 
     @Override
@@ -91,22 +98,21 @@ public class CartServiceImpl implements CartService {
     }
 
     private CartItem toCartItem(CartItemCreateDto dto) {
-        Product product = productRepository.findById(Math.toIntExact(dto.getProductId()))
+        Product product = productRepository.findById(dto.getProductId())
                 .orElseThrow(() -> new IllegalArgumentException("Product not found"));
 
         if (!product.isPresent()) {
             throw new IllegalArgumentException("Product is not available: " + dto.getProductId());
         }
-//        if (dto.getQuantity() > 100 || dto.getQuantity() < 0) {
-//            throw new IllegalArgumentException("Quantity exceeds 100");
-//        }
+
         CartItem cartItem = new CartItem();
         cartItem.setProduct(product);
         cartItem.setQuantity(dto.getQuantity());
         cartItem.setDiscount(product.getDiscount());
-        cartItem.setProductPrice(product.getPrice() - cartItem.getDiscount()); // Narxni tiyinda hisoblash
+        cartItem.setProductPrice(product.getPrice() - cartItem.getDiscount());
         return cartItem;
     }
+
 
     private long calculateTotalPrice(List<CartItem> cartItems) {
         return cartItems.stream()

@@ -1,5 +1,6 @@
 package sarik.dev.foodwaveproject.service.impl;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -19,6 +20,7 @@ import sarik.dev.foodwaveproject.repository.PaymentRepository;
 import sarik.dev.foodwaveproject.service.OrderService;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -58,17 +60,17 @@ public class OrderServiceImpl implements OrderService {
 //        order.setOrderDate(LocalDate.now());
 //        order.setPayment(payment);
 //        order.setOrderStatus(UserOrderStatus.PLACED.name());
-//
-//        // OrderItemlar yaratish
-////        List<OrderItem> orderItems = orderCreateDto.getOrderItems().stream()
-////                .map(dto -> toOrderItem(dto, order))
-////                .collect(Collectors.toList());
-////        order.setOrderItems(orderItems);
-//        List<OrderItem> orderItems = orderCreateDto.getOrderItems().stream()
+
+        // OrderItemlar yaratish
+//        List<OrderItem> orderItems = orderCreateDto.().stream()
 //                .map(dto -> toOrderItem(dto, order))
 //                .collect(Collectors.toList());
 //        order.setOrderItems(orderItems);
-//
+//      List<OrderItem> orderItems = orderCreateDto.getOrderItems().stream()
+//                .map(dto -> toOrderItem(dto, order))
+//                .collect(Collectors.toList());
+//        order.setOrderItems(orderItems);
+
 //
 //        // Umumiy narxni hisoblash
 //        double totalAmount = orderItems.stream()
@@ -88,18 +90,26 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderResponseDto createOrderFromCart(Long cartId) {
 
+        // Savatni olish
         Cart cart = cartRepository.findById(cartId)
-                .orElseThrow(() -> new IllegalArgumentException("Savatcha topilmadi: ID = " + cartId));
+                .orElseThrow(() -> new EntityNotFoundException("Savat topilmadi: ID = " + cartId));
 
         AuthUser user = cart.getAuthUser();
         if (user == null) {
-            throw new IllegalArgumentException("Foydalanuvchi ma'lumotlari mavjud emas");
+            throw new IllegalStateException("Foydalanuvchi ma'lumotlari mavjud emas");
         }
 
+        // Savat bo'shligini tekshirish
+        if (cart.getCartItems() == null || cart.getCartItems().isEmpty()) {
+            throw new IllegalStateException("Savat bo'sh: ID = " + cartId);
+        }
+
+        // To'lov yaratish
         Payment payment = new Payment();
-        payment.setPaymentMethod("Cash");
+        payment.setPaymentMethod("Cash"); // Kelajakda dinamik o'zgartirilishi mumkin
         paymentRepository.save(payment);
 
+        // Buyurtma yaratish
         Order order = new Order();
         order.setEmail(user.getEmail());
         order.setUser(user);
@@ -107,23 +117,31 @@ public class OrderServiceImpl implements OrderService {
         order.setPayment(payment);
         order.setOrderStatus(OrderStatus.PLACED.name());
 
+        // Buyurtma elementlarini yaratish
         List<OrderItem> orderItems = cart.getCartItems().stream()
                 .map(cartItem -> toOrderItem(cartItem, order))
                 .collect(Collectors.toList());
         order.setOrderItems(orderItems);
 
-        double totalAmount = orderItems.stream()
-                .mapToDouble(item -> item.getOrderedProductPrice() * item.getQuantity())
+        Long totalAmount =  orderItems.stream()
+                .mapToLong(item -> item.getOrderedProductPrice() * item.getQuantity())
                 .sum();
         order.setTotalAmount(totalAmount);
 
+
+
+        // Buyurtmani saqlash
         orderRepository.save(order);
 
-        // cart ni tozalash
-//        cartRepository.deleteById(cartId);
+        // Savatni tozalash
+        cart.getCartItems().clear(); // Savat ichidagi elementlarni tozalash
+        cartRepository.save(cart);   // Savatni saqlash
 
-        log.info("Savatchadan buyurtma yaratildi: foydalanuvchi ID = {}", user.getId());
+        // Loglash
+        log.info("Savatchadan buyurtma yaratildi: foydalanuvchi ID = {}, buyurtma ID = {}, umumiy miqdor = {}",
+                user.getId(), order.getOrderId(), totalAmount);
 
+        // DTO qaytarish
         return toOrderResponseDto(order);
     }
 
@@ -167,7 +185,7 @@ public class OrderServiceImpl implements OrderService {
     private void validateStatusTransition(String currentStatus, String newStatus, String currentUserRole) {
         switch (currentStatus) {
             case "PLACED":
-                if (!newStatus.equals("CONFIRMED")  ) {
+                if (!newStatus.equals("CONFIRMED")) {
                     throw new IllegalStateException("Foydalanuvchi faqat PLACED holatidan CONFIRMED ga o'zgarishini tasdiqlashi mumkin.");
                 }
                 break;

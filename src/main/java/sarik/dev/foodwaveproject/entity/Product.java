@@ -45,5 +45,7 @@ public class Product {
     @OneToMany(mappedBy = "product", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @ToString.Exclude
     private List<OrderItem> orderItems = new ArrayList<>();
+
+
 }
 

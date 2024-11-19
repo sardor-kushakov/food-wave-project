@@ -7,6 +7,6 @@ import sarik.dev.foodwaveproject.entity.Category;
 
 @Mapper(componentModel = "spring")
 public interface CategoryMapper {
-    Category toCategory(CategoryDto dto);
+    Category toCategory2(CategoryDto dto);
     Category toCategory(CategoryResponseDTO dto);
 }

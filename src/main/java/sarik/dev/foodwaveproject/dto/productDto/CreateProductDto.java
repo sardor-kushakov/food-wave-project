@@ -1,5 +1,6 @@
 package sarik.dev.foodwaveproject.dto.productDto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Positive;
@@ -24,6 +25,7 @@ import java.util.List;
 public class CreateProductDto {
     @NotBlank(message = "Product name must not be blank")
     @Size(min = 3, message = "Product name must contain at least 3 characters")
+    @Schema(description = "product name" , example = "pizza")
     private String productName;
 
     @Positive(message = "Price must be a positive number")

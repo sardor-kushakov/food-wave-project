@@ -1,5 +1,7 @@
 package sarik.dev.foodwaveproject.controller;
 
+
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -14,11 +16,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import sarik.dev.foodwaveproject.dto.productDto.CreateProductDto;
-import sarik.dev.foodwaveproject.dto.categoryDto.CategoryResponseDTO;
 import sarik.dev.foodwaveproject.dto.productDto.ProductResponseDto;
 import sarik.dev.foodwaveproject.dto.productDto.UpdateDiscountProductDto;
 import sarik.dev.foodwaveproject.dto.productDto.UpdateIsPresentProductDto;
 import sarik.dev.foodwaveproject.entity.Product;
+import sarik.dev.foodwaveproject.exception.ResourceNotFoundException;
 import sarik.dev.foodwaveproject.mapping.CategoryMapper;
 import sarik.dev.foodwaveproject.mapping.IngredientMapper;
 import sarik.dev.foodwaveproject.mapping.ProductMapper;
@@ -31,9 +33,9 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
+@Tag(name = "Product API", description = "API for product")
 @RequestMapping("api/product")
 public class ProductController {
-
     private final ProductMapper productMapper;
     private final ProductService productService;
     private final CategoryMapper categoryMapper;
@@ -46,75 +48,67 @@ public class ProductController {
         this.categoryService = categoryService;
     }
 
+    @PostMapping
     @Transactional
-    @PostMapping()
     public ResponseEntity<ProductResponseDto> addProduct(@Valid @RequestBody CreateProductDto dto) {
-        CategoryResponseDTO category = categoryService.getCategoryByName(dto.getCategory().getName());
-        if (category == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found");
-        }
-        Product product = productMapper.toProduct(dto);
-        product.setCategory(categoryMapper.toCategory(category));
-        productService.createProduct(product);
-        return new ResponseEntity<>(productMapper.toProductResponseDto(product), HttpStatus.CREATED);
+        ProductResponseDto createdProduct = productService.createProduct(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdProduct);
     }
 
-    @GetMapping()
+    @GetMapping
     public ResponseEntity<List<ProductResponseDto>> getAllProducts() {
-        return new ResponseEntity<>(productService.getAllProducts(), HttpStatus.OK);
+        List<ProductResponseDto> products = productService.getAllProducts();
+        if (products.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(products);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ProductResponseDto> getProductById(@PathVariable Long id) {
-        Product productById = productService.getProductById(id);
-        if (productById == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found");
-        }
-        return new ResponseEntity<>(productMapper.toProductResponseDto(productById), HttpStatus.OK);
+        Optional<Product> product = productService.getProductById(id);
+        return product.map(value -> ResponseEntity.ok(productMapper.toProductResponseDto(value)))
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found with ID: " + id));
     }
-
 
     @GetMapping("/{categoryName}/products")
     public ResponseEntity<List<ProductResponseDto>> getProductsByCategory(@PathVariable String categoryName) {
-        List<Product> products = productService.getProductsByCategoryName(categoryName);
-        if (products.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No products found for the specified category");
-        }
-        return new ResponseEntity<>(productMapper.toProductResponseDtoList(products), HttpStatus.OK);
+        List<ProductResponseDto> products = productService.getProductsByCategoryName(categoryName);
+        return ResponseEntity.ok(products);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteProductById(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteProductById(@PathVariable Long id) {
         productService.deleteProductById(id);
+        return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<ProductResponseDto> updateProduct(@PathVariable Long id, @RequestBody CreateProductDto dto) {
-        Product product = productService.getProductById(id);
-        if (product.isPresent()) {
-            productService.updateProduct(dto, product);
-            return new ResponseEntity<>(productMapper.toProductResponseDto(product), HttpStatus.OK);
-        } else throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found");
+        Product existingProduct = productService.getProductById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
+        Product updatedProduct = productService.updateProduct(dto, existingProduct);
+        return ResponseEntity.ok(productMapper.toProductResponseDto(updatedProduct));
     }
 
-    //    @PutMapping("/{id}/isPresent")
-//    public ResponseEntity<ProductResponseDto> updateProductIsPresent(@PathVariable Long id, @RequestBody UpdateIsPresentProductDto dto) {
-//        Product product = productService.getProductById(id);
-//        Product product1 = productService.updateProductIsPresent(dto, product);
-//        return new ResponseEntity<>(productMapper.toProductResponseDto(product1), HttpStatus.OK);
-//    }
     @PutMapping("/{id}/isPresent")
-    public ResponseEntity<ProductResponseDto> updateProductIsPresent(@PathVariable Long id, @RequestBody UpdateIsPresentProductDto dto) {
-        Product product = productService.getProductById(id);
-        Product updatedProduct = productService.updateProductIsPresent(dto, product);
-        return new ResponseEntity<>(productMapper.toProductResponseDto(updatedProduct), HttpStatus.OK);
+    public ResponseEntity<ProductResponseDto> updateProductIsPresent(
+            @PathVariable Long id, @RequestBody UpdateIsPresentProductDto dto) {
+        Product existingProduct = productService.getProductById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
+
+        Product updatedProduct = productService.updateProductIsPresent(dto, existingProduct);
+        return ResponseEntity.ok(productMapper.toProductResponseDto(updatedProduct));
     }
 
     @PutMapping("/{id}/discount")
-    public ResponseEntity<ProductResponseDto> updateProductDiscount(@PathVariable Long id, @RequestBody UpdateDiscountProductDto dto) {
-        Product product = productService.getProductById(id);
-        Product updatedProduct = productService.updateProductDiscount(dto, product);
-        return new ResponseEntity<>(productMapper.toProductResponseDto(updatedProduct), HttpStatus.OK);
+    public ResponseEntity<ProductResponseDto> updateProductDiscount(
+            @PathVariable Long id, @RequestBody UpdateDiscountProductDto dto) {
+        Product existingProduct = productService.getProductById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found"));
+
+        Product updatedProduct = productService.updateProductDiscount(dto, existingProduct);
+        return ResponseEntity.ok(productMapper.toProductResponseDto(updatedProduct));
     }
 }
 

@@ -64,11 +64,11 @@ public class FoodWaveProjectApplication {
 //                                .name("basicAuth")
 //                                .type(SecurityScheme.Type.HTTP)
 //                                .scheme("basic"))
-                        .addSecuritySchemes("bearerAuth", new SecurityScheme()
-                                .name("bearerAuth")
-                                .type(SecurityScheme.Type.HTTP)
-                                .scheme("bearer")
-                                .bearerFormat("JWT"))
+                                .addSecuritySchemes("bearerAuth", new SecurityScheme()
+                                        .name("bearerAuth")
+                                        .type(SecurityScheme.Type.HTTP)
+                                        .scheme("bearer")
+                                        .bearerFormat("JWT"))
                 );
 
     }
