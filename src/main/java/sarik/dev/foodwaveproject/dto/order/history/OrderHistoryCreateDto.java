@@ -1,24 +1,15 @@
 package sarik.dev.foodwaveproject.dto.order.history;
 
 import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.Setter;
-import uz.pdp.enums.OrderStatus;
+import jakarta.validation.constraints.Size;
+import sarik.dev.foodwaveproject.enums.OrderStatus;
 
-import java.time.LocalDateTime;
+import java.io.Serializable;
 
-@Getter
-@Setter
-public class OrderHistoryCreateDto {
+public record OrderHistoryCreateDto(
+        @NotNull(message = "Status cannot be null")
+        OrderStatus status,
 
-    @NotNull(message = "Order ID is required") // Buyurtma ID majburiy
-    private Long orderId; // Buyurtma ID
-
-    @NotNull(message = "Order status is required") // Buyurtma holati majburiy
-    private OrderStatus status; // Buyurtma holati (PENDING, COMPLETED, CANCELED)
-
-    @NotNull(message = "Change date is required") // Holat o'zgargan vaqt majburiy
-    private LocalDateTime changeDate = LocalDateTime.now(); // Holat o'zgargan vaqt
-
-    private String comments; // Qo'shimcha izoh yoki sabab
+        @Size(max = 200, message = "Comments cannot exceed 200 characters")
+        String comments) implements Serializable {
 }

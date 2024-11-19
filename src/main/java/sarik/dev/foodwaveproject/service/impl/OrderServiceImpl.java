@@ -15,12 +15,12 @@ import sarik.dev.foodwaveproject.entity.*;
 import sarik.dev.foodwaveproject.entity.auth.AuthUser;
 import sarik.dev.foodwaveproject.enums.OrderStatus;
 import sarik.dev.foodwaveproject.repository.CartRepository;
+import sarik.dev.foodwaveproject.repository.OrderHistoryRepository;
 import sarik.dev.foodwaveproject.repository.OrderRepository;
 import sarik.dev.foodwaveproject.repository.PaymentRepository;
 import sarik.dev.foodwaveproject.service.OrderService;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,13 +31,17 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final PaymentRepository paymentRepository;
     private final CartRepository cartRepository;
+    private final OrderHistoryRepository orderHistoryRepository;
+    private final CartServiceImpl cartServiceImpl;
 
     public OrderServiceImpl(OrderRepository orderRepository,
                             PaymentRepository paymentRepository,
-                            CartRepository cartRepository) {
+                            CartRepository cartRepository, OrderHistoryRepository orderHistoryRepository, CartServiceImpl cartServiceImpl) {
         this.orderRepository = orderRepository;
         this.paymentRepository = paymentRepository;
         this.cartRepository = cartRepository;
+        this.orderHistoryRepository = orderHistoryRepository;
+        this.cartServiceImpl = cartServiceImpl;
     }
 
     @Transactional
@@ -132,9 +136,7 @@ public class OrderServiceImpl implements OrderService {
         // Buyurtmani saqlash
         orderRepository.save(order);
 
-        // Savatni tozalash
-        cart.getCartItems().clear(); // Savat ichidagi elementlarni tozalash
-        cartRepository.save(cart);   // Savatni saqlash
+        cartServiceImpl.deleteCartById(cartId);   // Savatni saqlash
 
         // Loglash
         log.info("Savatchadan buyurtma yaratildi: foydalanuvchi ID = {}, buyurtma ID = {}, umumiy miqdor = {}",
