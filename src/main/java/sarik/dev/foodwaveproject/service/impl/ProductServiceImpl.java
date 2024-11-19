@@ -94,8 +94,8 @@ public class ProductServiceImpl implements ProductService {
         if (dto == null || product == null) {
             throw new IllegalArgumentException("Invalid input data");
         }
-        if (dto.getDiscount() < 0 || dto.getDiscount() > 100) {
-            throw new IllegalArgumentException("Discount must be between 0 and 100");
+        if (product.getPrice()<dto.getDiscount()) {
+            throw new IllegalArgumentException("Discount must be small than product price");
         }
         product.setDiscount(dto.getDiscount());
         return productRepository.save(product);

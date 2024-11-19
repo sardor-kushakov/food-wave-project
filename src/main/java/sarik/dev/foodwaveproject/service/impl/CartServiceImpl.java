@@ -91,7 +91,7 @@ public class CartServiceImpl implements CartService {
     }
 
     private CartItem toCartItem(CartItemCreateDto dto) {
-        Product product = productRepository.findById(Math.toIntExact(dto.getProductId()))
+        Product product = productRepository.findById(dto.getProductId())
                 .orElseThrow(() -> new IllegalArgumentException("Product not found"));
 
         if (!product.isPresent()) {
