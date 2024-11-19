@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import sarik.dev.foodwaveproject.dto.categoryDto.CategoryCreateDTO;
 import sarik.dev.foodwaveproject.dto.categoryDto.CategoryResponseDTO;
@@ -23,6 +24,7 @@ public class CategoryController {
         this.categoryService = categoryService;
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<CategoryResponseDTO> createCategory(@Valid @RequestBody CategoryCreateDTO categoryCreateDTO) {
         CategoryResponseDTO createdCategory = categoryService.createCategory(categoryCreateDTO);
@@ -47,12 +49,13 @@ public class CategoryController {
         return ResponseEntity.ok(categories);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/update/{id}")
     public ResponseEntity<CategoryResponseDTO> updateCategory(@PathVariable Long id, @Valid @RequestBody CategoryUpdateDTO categoryUpdateDTO) {
         CategoryResponseDTO updatedCategory = categoryService.updateCategory(id, categoryUpdateDTO);
         return ResponseEntity.ok(updatedCategory);
     }
-
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
         categoryService.deleteCategory(id);

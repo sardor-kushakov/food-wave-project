@@ -3,6 +3,7 @@ package sarik.dev.foodwaveproject.controller;
 
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
@@ -61,6 +62,7 @@ public class AuthController {
         }
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/create")
     public ResponseEntity<AuthUserResponseDTO> createUser(@Valid @RequestBody CreateAuthUserDTO dto) {
         AuthUserResponseDTO user = authUserServiceImpl.registerUser(dto);
@@ -79,12 +81,14 @@ public class AuthController {
         return ResponseEntity.ok(user);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/update/{id}")
     public ResponseEntity<AuthUserResponseDTO> updateUser(@PathVariable Long id, @Valid @RequestBody UpdateAuthUserDTO updateAuthUserDTO) {
         AuthUserResponseDTO user = authUserServiceImpl.updateUser(id, updateAuthUserDTO);
         return ResponseEntity.ok(user);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteUserById(@PathVariable Long id) {
         authUserServiceImpl.deleteUserById(id);
