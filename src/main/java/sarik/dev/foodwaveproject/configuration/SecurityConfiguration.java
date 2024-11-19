@@ -39,6 +39,7 @@ public class SecurityConfiguration {
     private final OTPAuthenticationProvider otpAuthenticationProvider;
 
     public static final String[] WHITE_LIST = {
+            "/**",
             "/api/auth/verify-otp",
             "/api/auth/register",
             "/api/auth/login",

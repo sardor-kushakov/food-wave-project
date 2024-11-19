@@ -43,11 +43,8 @@ public class Product {
     @Column(nullable = false)
     private Long discount = 0L;
 
-    @OneToMany(mappedBy = "product", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @ToString.Exclude
-    @JsonIgnore
     private List<OrderItem> orderItems = new ArrayList<>();
-
-
 }
 
