@@ -123,20 +123,19 @@ public class OrderServiceImpl implements OrderService {
                 .collect(Collectors.toList());
         order.setOrderItems(orderItems);
 
-        Long totalAmount =  orderItems.stream()
+        Long totalAmount = orderItems.stream()
                 .mapToLong(item -> item.getOrderedProductPrice() * item.getQuantity())
                 .sum();
         order.setTotalAmount(totalAmount);
-
 
 
         // Buyurtmani saqlash
         orderRepository.save(order);
 
         // Savatni tozalash
-        cart.getCartItems().clear(); // Savat ichidagi elementlarni tozalash
-        cartRepository.save(cart);   // Savatni saqlash
-
+//        cart.getCartItems().clear(); // Savat ichidagi elementlarni tozalash
+//        cartRepository.save(cart);   // Savatni saqlash
+        cartRepository.deleteById(cartId);
         // Loglash
         log.info("Savatchadan buyurtma yaratildi: foydalanuvchi ID = {}, buyurtma ID = {}, umumiy miqdor = {}",
                 user.getId(), order.getOrderId(), totalAmount);
