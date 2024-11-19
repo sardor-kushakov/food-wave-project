@@ -5,13 +5,14 @@ import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
-@NoArgsConstructor
-@AllArgsConstructor
+
+@Entity
+@Table(name = "products")
 @ToString
 @Getter
 @Setter
-@Entity
-@Table(name = "products")
+@NoArgsConstructor
+@AllArgsConstructor
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,9 +24,10 @@ public class Product {
     @Column(nullable = false)
     private Long price;
 
+    @Column
     private String image;
 
-//    @Size(min = 6, message = "Product description must contain at least 6 characters")
+    @Column
     private String description;
 
     @ElementCollection
@@ -33,7 +35,7 @@ public class Product {
     private List<String> ingredients = new ArrayList<>();
 
     @ManyToOne
-    @JoinColumn(name = "category_id" , nullable = false)
+    @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
     @Column(nullable = false)

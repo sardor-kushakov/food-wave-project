@@ -23,7 +23,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import sarik.dev.foodwaveproject.generic.AppErrorDTO;
+import sarik.dev.foodwaveproject.generic.AppErrorDto;
 
 import java.io.OutputStream;
 import java.util.List;
@@ -33,19 +33,19 @@ import java.util.List;
 @EnableMethodSecurity
 public class SecurityConfiguration {
 
-    private final ObjectMapper objectMapper;
-    private final UserDetailsService userDetailsService;
-    private final JwtTokenUtil jwtTokenUtil;
-    private final OTPAuthenticationProvider otpAuthenticationProvider;
-
     public static final String[] WHITE_LIST = {
             "/api/auth/verify-otp",
             "/api/auth/register",
             "/api/auth/login",
-            "/swagger-ui/index.html",
+            "/swagger-ui/**",
+            "/swagger-resources/**",
             "/v3/api-docs/**",
             "/api/oauth2/**"
     };
+    private final ObjectMapper objectMapper;
+    private final UserDetailsService userDetailsService;
+    private final JwtTokenUtil jwtTokenUtil;
+    private final OTPAuthenticationProvider otpAuthenticationProvider;
 
     public SecurityConfiguration(ObjectMapper objectMapper, UserDetailsService userDetailsService, JwtTokenUtil jwtTokenUtil, OTPAuthenticationProvider otpAuthenticationProvider) {
         this.objectMapper = objectMapper;
@@ -126,7 +126,7 @@ public class SecurityConfiguration {
             String errorPath = request.getRequestURI();
             String errorMessage = authException.getMessage();
             int errorCode = 401;
-            AppErrorDTO appErrorDTO = new AppErrorDTO(errorMessage, errorPath, errorCode);
+            AppErrorDto appErrorDTO = new AppErrorDto(errorMessage, errorPath, errorCode);
             response.setStatus(errorCode);
             OutputStream outputStream = response.getOutputStream();
             objectMapper.writeValue(outputStream, appErrorDTO);
@@ -140,7 +140,7 @@ public class SecurityConfiguration {
             String errorPath = request.getRequestURI();
             String errorMessage = accessDeniedException.getMessage();
             int errorCode = 403;
-            AppErrorDTO appErrorDTO = new AppErrorDTO(errorMessage, errorPath, errorCode);
+            AppErrorDto appErrorDTO = new AppErrorDto(errorMessage, errorPath, errorCode);
             OutputStream outputStream = response.getOutputStream();
             objectMapper.writeValue(outputStream, appErrorDTO);
         });
@@ -151,6 +151,7 @@ public class SecurityConfiguration {
         return new BCryptPasswordEncoder();
     }
 
-    private record OAuth2LoginResponse(String token, String email, String name) {}
+    private record OAuth2LoginResponse(String token, String email, String name) {
+    }
 
 }

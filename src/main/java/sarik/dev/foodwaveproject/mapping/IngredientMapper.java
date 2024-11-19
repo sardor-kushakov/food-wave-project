@@ -1,7 +1,7 @@
 package sarik.dev.foodwaveproject.mapping;
 
 import org.mapstruct.Mapper;
-import sarik.dev.foodwaveproject.dto.IngredientDto;
+import sarik.dev.foodwaveproject.dto.ingredient.IngredientDto;
 import sarik.dev.foodwaveproject.entity.Ingredients;
 
 @Mapper(componentModel = "spring")

@@ -9,7 +9,6 @@ import sarik.dev.foodwaveproject.entity.Otp;
 import sarik.dev.foodwaveproject.repository.OtpRepository;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 import java.util.Random;
 
 @Service
@@ -28,22 +27,16 @@ public class OtpService {
         String otpCode = String.format("%06d", new Random().nextInt(999999));
         LocalDateTime expirationTime = LocalDateTime.now().plusMinutes(5);
 
-
         otpRepository.deleteByEmail(email);
-
 
         Otp otp = new Otp(email, otpCode, expirationTime);
         otpRepository.save(otp);
-
-
         sendEmail(email, otpCode);
-
         return otpCode;
     }
 
     private void sendEmail(String email, String otpCode) {
         try {
-
             MimeMessage mimeMessage = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
 
@@ -74,10 +67,8 @@ public class OtpService {
             }
         }*/
 
-
         return otpRepository.findByEmail(email)
                 .filter(otp -> otp.getOtpCode().equals(otpCode) && otp.getExpirationTime().isAfter(LocalDateTime.now()))
                 .isPresent();
     }
 }
-

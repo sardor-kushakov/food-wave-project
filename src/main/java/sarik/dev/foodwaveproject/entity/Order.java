@@ -3,14 +3,12 @@ package sarik.dev.foodwaveproject.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import sarik.dev.foodwaveproject.entity.auth.AuthUser;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -42,6 +40,9 @@ public class Order {
     @JoinColumn(name = "payment_id")
     private Payment payment;
 
+    @Column
     private Double totalAmount;
+
+    @Column
     private String orderStatus;
 }

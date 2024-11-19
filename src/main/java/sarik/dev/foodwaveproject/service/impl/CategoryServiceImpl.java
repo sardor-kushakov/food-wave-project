@@ -3,9 +3,9 @@ package sarik.dev.foodwaveproject.service.impl;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import sarik.dev.foodwaveproject.dto.categoryDto.CategoryCreateDTO;
-import sarik.dev.foodwaveproject.dto.categoryDto.CategoryResponseDTO;
-import sarik.dev.foodwaveproject.dto.categoryDto.CategoryUpdateDTO;
+import sarik.dev.foodwaveproject.dto.category.CategoryCreateDto;
+import sarik.dev.foodwaveproject.dto.category.CategoryResponseDto;
+import sarik.dev.foodwaveproject.dto.category.CategoryUpdateDto;
 import sarik.dev.foodwaveproject.entity.Category;
 import sarik.dev.foodwaveproject.exception.ResourceNotFoundException;
 import sarik.dev.foodwaveproject.repository.CategoryRepository;
@@ -26,7 +26,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
-    public CategoryResponseDTO createCategory(CategoryCreateDTO categoryCreateDTO) {
+    public CategoryResponseDto createCategory(CategoryCreateDto categoryCreateDTO) {
         Category category = new Category();
         category.setCategoryName(categoryCreateDTO.getCategoryName());
         return mapToDTO(categoryRepository.save(category));
@@ -34,7 +34,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional(readOnly = true)
-    public CategoryResponseDTO getCategoryById(Long id) {
+    public CategoryResponseDto getCategoryById(Long id) {
         return categoryRepository.findById(id)
                 .map(this::mapToDTO)
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found with id: " + id));
@@ -42,7 +42,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<CategoryResponseDTO> getAllCategories() {
+    public List<CategoryResponseDto> getAllCategories() {
         return categoryRepository.findAll()
                 .stream()
                 .map(this::mapToDTO)
@@ -51,7 +51,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
-    public CategoryResponseDTO updateCategory(Long id, CategoryUpdateDTO categoryUpdateDTO) {
+    public CategoryResponseDto updateCategory(Long id, CategoryUpdateDto categoryUpdateDTO) {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found with id: " + id));
         category.setCategoryName(categoryUpdateDTO.getCategoryName());
@@ -69,13 +69,13 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional(readOnly = true)
-    public CategoryResponseDTO getCategoryByName(String name) {
+    public CategoryResponseDto getCategoryByName(String name) {
         return categoryRepository.findByCategoryName(name)
                 .map(this::mapToDTO)
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found with name: " + name));
     }
 
-    private CategoryResponseDTO mapToDTO(Category category) {
-        return new CategoryResponseDTO(category.getCategoryId(), category.getCategoryName());
+    private CategoryResponseDto mapToDTO(Category category) {
+        return new CategoryResponseDto(category.getCategoryId(), category.getCategoryName());
     }
 }

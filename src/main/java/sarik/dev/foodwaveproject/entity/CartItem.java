@@ -2,12 +2,14 @@ package sarik.dev.foodwaveproject.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "cart_items")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class CartItem {
@@ -24,9 +26,12 @@ public class CartItem {
     @JoinColumn(name = "product_id")
     private Product product;
 
-
+    @Column
     private Integer quantity;
-    private long discount;
-    private long productPrice;
 
+    @Column
+    private long discount;
+
+    @Column
+    private long productPrice;
 }

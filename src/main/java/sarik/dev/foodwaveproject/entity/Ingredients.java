@@ -4,22 +4,20 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
-import java.util.ArrayList;
-import java.util.List;
-@ToString
-@AllArgsConstructor
-@NoArgsConstructor
+@Entity
+@Table(name = "ingredients")
 @Getter
 @Setter
-@Entity
-@Table(name = "ingredientses")
+@NoArgsConstructor
+@AllArgsConstructor
 public class Ingredients {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column
     private String name;
 }

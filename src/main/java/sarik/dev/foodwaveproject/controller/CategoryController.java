@@ -5,9 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import sarik.dev.foodwaveproject.dto.categoryDto.CategoryCreateDTO;
-import sarik.dev.foodwaveproject.dto.categoryDto.CategoryResponseDTO;
-import sarik.dev.foodwaveproject.dto.categoryDto.CategoryUpdateDTO;
+import sarik.dev.foodwaveproject.dto.category.CategoryCreateDto;
+import sarik.dev.foodwaveproject.dto.category.CategoryResponseDto;
+import sarik.dev.foodwaveproject.dto.category.CategoryUpdateDto;
 import sarik.dev.foodwaveproject.service.CategoryService;
 
 import java.util.List;
@@ -24,32 +24,32 @@ public class CategoryController {
     }
 
     @PostMapping
-    public ResponseEntity<CategoryResponseDTO> createCategory(@Valid @RequestBody CategoryCreateDTO categoryCreateDTO) {
-        CategoryResponseDTO createdCategory = categoryService.createCategory(categoryCreateDTO);
+    public ResponseEntity<CategoryResponseDto> createCategory(@Valid @RequestBody CategoryCreateDto categoryCreateDTO) {
+        CategoryResponseDto createdCategory = categoryService.createCategory(categoryCreateDTO);
         return new ResponseEntity<>(createdCategory, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CategoryResponseDTO> getCategoryById(@PathVariable Long id) {
-        CategoryResponseDTO category = categoryService.getCategoryById(id);
+    public ResponseEntity<CategoryResponseDto> getCategoryById(@PathVariable Long id) {
+        CategoryResponseDto category = categoryService.getCategoryById(id);
         return ResponseEntity.ok(category);
     }
 
     @GetMapping("/by-name/{name}")
-    public ResponseEntity<CategoryResponseDTO> getCategoryByName(@PathVariable String name) {
-        CategoryResponseDTO category = categoryService.getCategoryByName(name);
+    public ResponseEntity<CategoryResponseDto> getCategoryByName(@PathVariable String name) {
+        CategoryResponseDto category = categoryService.getCategoryByName(name);
         return ResponseEntity.ok(category);
     }
 
     @GetMapping
-    public ResponseEntity<List<CategoryResponseDTO>> getAllCategories() {
-        List<CategoryResponseDTO> categories = categoryService.getAllCategories();
+    public ResponseEntity<List<CategoryResponseDto>> getAllCategories() {
+        List<CategoryResponseDto> categories = categoryService.getAllCategories();
         return ResponseEntity.ok(categories);
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<CategoryResponseDTO> updateCategory(@PathVariable Long id, @Valid @RequestBody CategoryUpdateDTO categoryUpdateDTO) {
-        CategoryResponseDTO updatedCategory = categoryService.updateCategory(id, categoryUpdateDTO);
+    public ResponseEntity<CategoryResponseDto> updateCategory(@PathVariable Long id, @Valid @RequestBody CategoryUpdateDto categoryUpdateDTO) {
+        CategoryResponseDto updatedCategory = categoryService.updateCategory(id, categoryUpdateDTO);
         return ResponseEntity.ok(updatedCategory);
     }
 

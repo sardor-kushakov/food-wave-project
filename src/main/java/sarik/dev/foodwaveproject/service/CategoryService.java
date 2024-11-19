@@ -1,24 +1,21 @@
 package sarik.dev.foodwaveproject.service;
 
-
-
-
-import sarik.dev.foodwaveproject.dto.categoryDto.CategoryCreateDTO;
-import sarik.dev.foodwaveproject.dto.categoryDto.CategoryResponseDTO;
-import sarik.dev.foodwaveproject.dto.categoryDto.CategoryUpdateDTO;
+import sarik.dev.foodwaveproject.dto.category.CategoryCreateDto;
+import sarik.dev.foodwaveproject.dto.category.CategoryResponseDto;
+import sarik.dev.foodwaveproject.dto.category.CategoryUpdateDto;
 
 import java.util.List;
 
 public interface CategoryService {
-    CategoryResponseDTO createCategory(CategoryCreateDTO categoryCreateDTO);
+    CategoryResponseDto createCategory(CategoryCreateDto categoryCreateDTO);
 
-    CategoryResponseDTO getCategoryById(Long id);
+    CategoryResponseDto getCategoryById(Long id);
 
-    List<CategoryResponseDTO> getAllCategories();
+    List<CategoryResponseDto> getAllCategories();
 
-    CategoryResponseDTO updateCategory(Long id, CategoryUpdateDTO categoryUpdateDTO);
+    CategoryResponseDto updateCategory(Long id, CategoryUpdateDto categoryUpdateDTO);
 
     void deleteCategory(Long id);
 
-    CategoryResponseDTO getCategoryByName(String name);
+    CategoryResponseDto getCategoryByName(String name);
 }
