@@ -21,6 +21,7 @@ import sarik.dev.foodwaveproject.service.CartService;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
 @Service
 public class CartServiceImpl implements CartService {
     private final CartRepository cartRepository;
@@ -59,6 +60,7 @@ public class CartServiceImpl implements CartService {
         cartRepository.save(cart);
         return toCartResponseDto(cart);
     }
+
     @Transactional
     @Override
     public CartResponseDto updateCart(CartUpdateDto cartUpdateDto) {
@@ -84,12 +86,26 @@ public class CartServiceImpl implements CartService {
         return toCartResponseDto(cart);
     }
 
+//    @Override
+//    public CartResponseDto getCartByUserId(Long userId) {
+//        Cart cart = cartRepository.findUniqueCartByAuthUserId(userId)
+//                .orElseThrow(() -> new IllegalArgumentException("Cart not found"));
+//        return toCartResponseDto(cart);
+//    }
+
     @Override
-    public CartResponseDto getCartByUserId(Long userId) {
-        Cart cart = cartRepository.findByAuthUserId(userId)
-                .orElseThrow(() -> new IllegalArgumentException("Cart not found"));
-        return toCartResponseDto(cart);
+    public List<CartResponseDto> getCartByUserId(Long userId) {
+        List<Cart> carts = cartRepository.findAllByAuthUserId(userId);
+
+        if (carts.isEmpty()) {
+            throw new IllegalArgumentException("No carts found for user");
+        }
+
+        return carts.stream()
+                .map(this::toCartResponseDto)
+                .collect(Collectors.toList());
     }
+
 
     @Override
     public void deleteCartById(Long cartId) {
@@ -127,7 +143,7 @@ public class CartServiceImpl implements CartService {
         List<CartItemResponseDto> cartItems = cart.getCartItems().stream()
                 .map(CartItemResponseDto::new)
                 .collect(Collectors.toList());
-        long totalPriceSom = cart.getTotalPrice() / 100; // Umumiy narxni so'mga aylantirish
+        long totalPriceSom = cart.getTotalPrice();
         return new CartResponseDto(cart.getCartId(), cart.getAuthUser().getId(), cartItems, totalPriceSom);
     }
 }

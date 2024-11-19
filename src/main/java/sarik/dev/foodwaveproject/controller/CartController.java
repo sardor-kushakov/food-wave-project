@@ -9,6 +9,8 @@ import sarik.dev.foodwaveproject.dto.cartDto.CartResponseDto;
 import sarik.dev.foodwaveproject.dto.cartDto.CartUpdateDto;
 import sarik.dev.foodwaveproject.service.CartService;
 
+import java.util.List;
+
 
 @RestController
 @RequestMapping("/api/cart")
@@ -32,9 +34,9 @@ public class CartController {
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<CartResponseDto> getCartByUserId(@PathVariable Long userId) {
-        CartResponseDto cart = cartService.getCartByUserId(userId);
-        return new ResponseEntity<>(cart, HttpStatus.OK);
+    public ResponseEntity<List<CartResponseDto>> getCartByUserId(@PathVariable Long userId) {
+        List<CartResponseDto> carts = cartService.getCartByUserId(userId);
+        return new ResponseEntity<>(carts, HttpStatus.OK);
     }
 
     @DeleteMapping("/{cartId}")

@@ -1,10 +1,14 @@
 package sarik.dev.foodwaveproject.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import sarik.dev.foodwaveproject.entity.Cart;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface CartRepository extends JpaRepository<Cart, Long> {
-    Optional<Cart> findByAuthUserId(Long id);
+    @Query("SELECT c FROM Cart c WHERE c.authUser.id = :id")
+    List<Cart> findAllByAuthUserId(@Param("id") Long id);
 }

@@ -6,6 +6,7 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -48,6 +49,7 @@ public class ProductController {
         this.categoryService = categoryService;
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     @Transactional
     public ResponseEntity<ProductResponseDto> addProduct(@Valid @RequestBody CreateProductDto dto) {
@@ -77,12 +79,15 @@ public class ProductController {
         return ResponseEntity.ok(products);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProductById(@PathVariable Long id) {
         productService.deleteProductById(id);
         return ResponseEntity.noContent().build();
     }
 
+
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<ProductResponseDto> updateProduct(@PathVariable Long id, @RequestBody CreateProductDto dto) {
         Product existingProduct = productService.getProductById(id)

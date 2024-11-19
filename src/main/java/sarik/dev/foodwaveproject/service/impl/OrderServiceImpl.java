@@ -198,7 +198,7 @@ public class OrderServiceImpl implements OrderService {
                 }
                 break;
             case "DELIVERED":
-                if (!newStatus.equals("COMPLETED") || !currentUserRole.equals("ROLE_USER")) {
+                if (!newStatus.equals("COMPLETED")) {
                     throw new IllegalStateException("Foydalanuvchi faqat DELIVERED holatidan COMPLETED ga o'zgarishini tasdiqlashi mumkin.");
                 }
                 break;
