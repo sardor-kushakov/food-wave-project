@@ -2,6 +2,7 @@ package sarik.dev.foodwaveproject.service.impl;
 
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
+import sarik.dev.foodwaveproject.configuration.SessionUser;
 import sarik.dev.foodwaveproject.dto.cartDto.CartCreateDto;
 import sarik.dev.foodwaveproject.dto.cartDto.CartResponseDto;
 import sarik.dev.foodwaveproject.dto.cartDto.CartUpdateDto;
@@ -25,17 +26,19 @@ public class CartServiceImpl implements CartService {
     private final CartRepository cartRepository;
     private final ProductRepository productRepository;
     private final AuthUserRepository authUserRepository;
+    private final SessionUser sessionUser;
 
-    public CartServiceImpl(CartRepository cartRepository, ProductRepository productRepository, AuthUserRepository authUserRepository) {
+    public CartServiceImpl(CartRepository cartRepository, ProductRepository productRepository, AuthUserRepository authUserRepository, SessionUser sessionUser) {
         this.cartRepository = cartRepository;
         this.productRepository = productRepository;
         this.authUserRepository = authUserRepository;
+        this.sessionUser = sessionUser;
     }
 
     @Transactional
     @Override
     public CartResponseDto createCart(CartCreateDto cartCreateDto) {
-        AuthUser user = authUserRepository.findById(1L)
+        AuthUser user = authUserRepository.findById(sessionUser.getCurrentUser().getId())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         Cart cart = new Cart();
