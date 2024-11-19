@@ -123,11 +123,10 @@ public class OrderServiceImpl implements OrderService {
                 .collect(Collectors.toList());
         order.setOrderItems(orderItems);
 
-        Long totalAmount =  orderItems.stream()
+        Long totalAmount = orderItems.stream()
                 .mapToLong(item -> item.getOrderedProductPrice() * item.getQuantity())
                 .sum();
         order.setTotalAmount(totalAmount);
-
 
 
         // Buyurtmani saqlash
