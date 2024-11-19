@@ -14,6 +14,7 @@ import sarik.dev.foodwaveproject.exception.ResourceNotFoundException;
 import sarik.dev.foodwaveproject.mapping.CategoryMapper;
 import sarik.dev.foodwaveproject.mapping.ProductMapper;
 import sarik.dev.foodwaveproject.repository.CategoryRepository;
+import sarik.dev.foodwaveproject.repository.OrderItemRepository;
 import sarik.dev.foodwaveproject.repository.ProductRepository;
 import sarik.dev.foodwaveproject.service.CategoryService;
 import sarik.dev.foodwaveproject.service.ProductService;
@@ -29,13 +30,15 @@ public class ProductServiceImpl implements ProductService {
     private final ProductMapper productMapper;
     private final CategoryMapper categoryMapper;
     private final CategoryService categoryService;
+    private final OrderItemRepository orderItemRepository;
 
-    public ProductServiceImpl(ProductRepository productRepository, CategoryRepository categoryRepository, CategoryServiceImpl categoryService, ProductMapper productMapper, CategoryMapper categoryMapper, CategoryService categoryService1) {
+    public ProductServiceImpl(ProductRepository productRepository, CategoryRepository categoryRepository, CategoryServiceImpl categoryService, ProductMapper productMapper, CategoryMapper categoryMapper, CategoryService categoryService1, OrderItemRepository orderItemRepository) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
         this.productMapper = productMapper;
         this.categoryMapper = categoryMapper;
         this.categoryService = categoryService1;
+        this.orderItemRepository = orderItemRepository;
     }
 
     @Override
@@ -44,11 +47,9 @@ public class ProductServiceImpl implements ProductService {
         if (category == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found");
         }
-
         Product product = productMapper.toProduct(dto);
         product.setCategory(categoryMapper.toCategory(category));
         productRepository.save(product);
-
         return productMapper.toProductResponseDto(product);
     }
 
@@ -93,8 +94,8 @@ public class ProductServiceImpl implements ProductService {
         if (dto == null || product == null) {
             throw new IllegalArgumentException("Invalid input data");
         }
-        if (dto.getDiscount() < 0 || dto.getDiscount() > 100) {
-            throw new IllegalArgumentException("Discount must be between 0 and 100");
+        if (product.getPrice()<dto.getDiscount()) {
+            throw new IllegalArgumentException("Discount must be small than product price");
         }
         product.setDiscount(dto.getDiscount());
         return productRepository.save(product);
@@ -121,5 +122,18 @@ public class ProductServiceImpl implements ProductService {
         }
 
         return productMapper.toProductResponseDtoList(products);
+    }
+
+    @Override
+    public List<Product> getProductsByPopularity() {
+        List<Object[]> popularityData = orderItemRepository.findProductsByPopularity();
+
+        return popularityData.stream()
+                .map(data -> {
+                    Long productId = (Long) data[0];
+                    return productRepository.findById(productId).orElse(null);
+                })
+                .filter(product -> product != null)
+                .collect(Collectors.toList());
     }
 }

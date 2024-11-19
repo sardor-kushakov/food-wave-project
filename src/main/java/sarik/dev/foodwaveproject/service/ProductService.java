@@ -18,4 +18,5 @@ public interface ProductService {
     Product updateProductDiscount(UpdateDiscountProductDto dto, Product product);
     void deleteProductById(Long id);
     List<ProductResponseDto> getProductsByCategoryName(String categoryName);
+    List<Product> getProductsByPopularity();
 }
