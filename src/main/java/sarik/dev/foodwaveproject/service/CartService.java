@@ -14,4 +14,10 @@ public interface CartService {
     CartResponseDto updateCart(CartUpdateDto cartUpdateDto); // Savatchani yangilash uchun yangi metod
 
     void deleteCartById(Long cartId);
+
+    List<CartResponseDto> getMyCarts();
+
+    void deleteMyCart(Long cartId);
+
+    CartResponseDto updateMyCart(CartUpdateDto cartUpdateDto);
 }

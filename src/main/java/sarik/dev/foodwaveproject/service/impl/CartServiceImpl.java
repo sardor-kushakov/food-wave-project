@@ -1,6 +1,8 @@
 package sarik.dev.foodwaveproject.service.impl;
 
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 import sarik.dev.foodwaveproject.configuration.SessionUser;
 import sarik.dev.foodwaveproject.dto.cartDto.CartCreateDto;
@@ -22,7 +24,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static org.hibernate.query.sqm.tree.SqmNode.log;
+
 @Service
+@Slf4j
 public class CartServiceImpl implements CartService {
     private final CartRepository cartRepository;
     private final ProductRepository productRepository;
@@ -45,7 +50,6 @@ public class CartServiceImpl implements CartService {
         Cart cart = new Cart();
         cart.setAuthUser(user);
 
-        // CartItem ob'ektlarini o'rnatish va bog'lash
         List<CartItem> cartItems = cartCreateDto.getCartItems().stream()
                 .map(dto -> {
                     CartItem cartItem = toCartItem(dto);
@@ -85,12 +89,66 @@ public class CartServiceImpl implements CartService {
         return toCartResponseDto(cart);
     }
 
-//    @Override
-//    public CartResponseDto getCartByUserId(Long userId) {
-//        Cart cart = cartRepository.findUniqueCartByAuthUserId(userId)
-//                .orElseThrow(() -> new IllegalArgumentException("Cart not found"));
-//        return toCartResponseDto(cart);
-//    }
+    @Transactional
+    @Override
+    public CartResponseDto updateMyCart(CartUpdateDto cartUpdateDto) {
+        AuthUser user = sessionUser.getCurrentUser();
+
+        Cart cart = cartRepository.findById(cartUpdateDto.getCartId())
+                .orElseThrow(() -> new IllegalArgumentException("Savat topilmadi: ID = " + cartUpdateDto.getCartId()));
+
+        if (!cart.getAuthUser().getId().equals(user.getId())) {
+            throw new IllegalStateException("Siz ushbu savatni yangilashga ruxsatga ega emassiz: ID = " + cartUpdateDto.getCartId());
+        }
+
+        for (CartItemUpdateDto updateDto : cartUpdateDto.getCartItems()) {
+            Optional<CartItem> cartItemOpt = cart.getCartItems().stream()
+                    .filter(item -> item.getCartItemId().equals(updateDto.getCartItemId()))
+                    .findFirst();
+
+            if (cartItemOpt.isPresent()) {
+                CartItem cartItem = cartItemOpt.get();
+                cartItem.setQuantity(updateDto.getQuantity());
+                cartItem.setProductPrice(cartItem.getProduct().getPrice() - cartItem.getDiscount());
+            } else {
+                throw new IllegalArgumentException("Savat elementi topilmadi: ID = " + updateDto.getCartItemId());
+            }
+        }
+
+        cart.setTotalPrice(calculateTotalPrice(cart.getCartItems()));
+
+        cartRepository.save(cart);
+
+        log.info("Foydalanuvchi ID = {} tomonidan savat yangilandi: Savat ID = {}", user.getId(), cartUpdateDto.getCartId());
+
+        return toCartResponseDto(cart);
+    }
+
+
+    @Transactional
+    @Override
+    public List<CartResponseDto> getMyCarts() {
+        AuthUser user = sessionUser.getCurrentUser();
+        List<Cart> carts = cartRepository.findAllByAuthUserId(user.getId());
+        return carts.stream()
+                .map(this::toCartResponseDto)
+                .collect(Collectors.toList());
+    }
+
+
+    @Transactional
+    @Override
+    public void deleteMyCart(Long cartId) {
+        AuthUser user = sessionUser.getCurrentUser();
+        Cart cart = cartRepository.findById(cartId)
+                .orElseThrow(() -> new IllegalArgumentException("Cart not found: ID = " + cartId));
+        if (!cart.getAuthUser().getId().equals(user.getId())) {
+            throw new IllegalStateException("Cart not found: ID = " + cartId);
+        }
+        cartRepository.delete(cart);
+
+    }
+
 
     @Override
     public List<CartResponseDto> getCartByUserId(Long userId) {

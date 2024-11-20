@@ -30,6 +30,16 @@ public class OrderController {
         return ResponseEntity.ok(orderService.createOrderFromCart(cartId));
     }
 
+    @GetMapping("/get-my-order")
+    public ResponseEntity<List<OrderResponseDto>> getMyOrder() {
+        return ResponseEntity.ok(orderService.getMyOrders());
+    }
+
+    @PostMapping("/create-from-many-carts/{cartIds}")
+    public ResponseEntity<OrderResponseDto> createOrderFromManyCartIds(@PathVariable List<Long> cartIds) {
+        return ResponseEntity.ok(orderService.createOrderFromMultipleCarts(cartIds));
+    }
+
     @GetMapping("/{orderId}")
     public ResponseEntity<OrderResponseDto> getOrderById(@PathVariable Long orderId) {
         return ResponseEntity.ok(orderService.getOrderById(orderId));
@@ -48,9 +58,15 @@ public class OrderController {
         return ResponseEntity.ok("Buyurtma statusi yangilandi.");
     }
 
-    @DeleteMapping("/{orderId}")
+    @DeleteMapping("/delete/{orderId}")
     public ResponseEntity<Void> deleteOrder(@PathVariable Long orderId) {
         orderService.deleteOrderById(orderId);
         return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/soft-delete/{orderId}")
+    public ResponseEntity<String> softDeleteOrder(@PathVariable Long orderId) {
+        orderService.softDeleteOrderById(orderId);
+        return ResponseEntity.ok("Buyurtma soft delete qilindi.");
     }
 }

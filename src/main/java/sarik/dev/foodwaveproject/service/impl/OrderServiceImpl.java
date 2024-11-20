@@ -8,6 +8,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import sarik.dev.foodwaveproject.configuration.SessionUser;
 import sarik.dev.foodwaveproject.dto.orderDto.OrderCreateDto;
 import sarik.dev.foodwaveproject.dto.orderDto.OrderResponseDto;
 import sarik.dev.foodwaveproject.dto.orderItemDto.OrderItemDto;
@@ -22,8 +23,8 @@ import sarik.dev.foodwaveproject.repository.PaymentRepository;
 import sarik.dev.foodwaveproject.service.OrderService;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -33,17 +34,19 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final PaymentRepository paymentRepository;
     private final CartRepository cartRepository;
+    private final SessionUser sessionUser;
     private final OrderHistoryRepository orderHistoryRepository;
     private final OrderMapper orderMapper;
 
     public OrderServiceImpl(OrderRepository orderRepository,
                             PaymentRepository paymentRepository,
-                            CartRepository cartRepository, OrderHistoryRepository orderHistoryRepository, OrderMapper orderMapper) {
+                            CartRepository cartRepository, SessionUser sessionUser) {
         this.orderRepository = orderRepository;
         this.paymentRepository = paymentRepository;
         this.cartRepository = cartRepository;
         this.orderHistoryRepository = orderHistoryRepository;
         this.orderMapper = orderMapper;
+        this.sessionUser = sessionUser;
     }
 
     @Transactional
@@ -139,9 +142,8 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.save(order);
 
         // Savatni tozalash
-        cart.getCartItems().clear(); // Savat ichidagi elementlarni tozalash
-
-        cartRepository.save(cart);   // Savatni saqlash
+//        cart.getCartItems().clear(); // Savat ichidagi elementlarni tozalash
+//        cartRepository.save(cart);   // Savatni saqlash
         cartRepository.deleteById(cartId);
         // Loglash
         log.info("Savatchadan buyurtma yaratildi: foydalanuvchi ID = {}, buyurtma ID = {}, umumiy miqdor = {}",
@@ -260,11 +262,26 @@ public class OrderServiceImpl implements OrderService {
     public boolean saveToHistory(Long orderId) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("Buyurtma topilmadi: ID = " + orderId));
-       if (order.getOrderStatus().equals("COMPLETED")){
-           OrderHistory history = orderMapper.orderToOrderHistory(order);
-           orderHistoryRepository.save(history);
-           return true;
-       }
-       return false;
+        if (order.getOrderStatus().equals("COMPLETED")){
+            OrderHistory history = orderMapper.orderToOrderHistory(order);
+            orderHistoryRepository.save(history);
+            return true;
+        }
+        return false;
+    }
+    @Transactional
+    @Override
+    public void softDeleteOrderById(Long orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new IllegalArgumentException("Buyurtma topilmadi: ID = " + orderId));
+
+        if (order.getDeleted()) {
+            throw new IllegalStateException("Buyurtma allaqachon o'chirilgan: ID = " + orderId);
+        }
+
+        order.setDeleted(true); // Soft delete the order
+        orderRepository.save(order);
+
+        log.info("Buyurtma soft delete qilindi: ID = {}", orderId);
     }
 }

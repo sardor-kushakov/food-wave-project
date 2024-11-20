@@ -44,4 +44,6 @@ public class Order {
 
     private Long totalAmount;
     private String orderStatus;
+
+    private Boolean deleted = false;
 }
