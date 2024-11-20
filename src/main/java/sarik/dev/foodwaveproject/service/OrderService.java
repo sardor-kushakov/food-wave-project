@@ -13,4 +13,5 @@ public interface OrderService {
     List<OrderResponseDto> getAllOrders(); // Hamma Orderlarni olish
     void updateOrderStatus(Long orderId, String newStatus); // Order statusini yangilash
     void deleteOrderById(Long orderId); // Orderni o'chirish
+    boolean saveToHistory(Long orderId);
 }

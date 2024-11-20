@@ -14,14 +14,16 @@ import sarik.dev.foodwaveproject.dto.orderItemDto.OrderItemDto;
 import sarik.dev.foodwaveproject.entity.*;
 import sarik.dev.foodwaveproject.entity.auth.AuthUser;
 import sarik.dev.foodwaveproject.enums.OrderStatus;
+import sarik.dev.foodwaveproject.mapping.OrderMapper;
 import sarik.dev.foodwaveproject.repository.CartRepository;
+import sarik.dev.foodwaveproject.repository.OrderHistoryRepository;
 import sarik.dev.foodwaveproject.repository.OrderRepository;
 import sarik.dev.foodwaveproject.repository.PaymentRepository;
 import sarik.dev.foodwaveproject.service.OrderService;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -31,13 +33,17 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final PaymentRepository paymentRepository;
     private final CartRepository cartRepository;
+    private final OrderHistoryRepository orderHistoryRepository;
+    private final OrderMapper orderMapper;
 
     public OrderServiceImpl(OrderRepository orderRepository,
                             PaymentRepository paymentRepository,
-                            CartRepository cartRepository) {
+                            CartRepository cartRepository, OrderHistoryRepository orderHistoryRepository, OrderMapper orderMapper) {
         this.orderRepository = orderRepository;
         this.paymentRepository = paymentRepository;
         this.cartRepository = cartRepository;
+        this.orderHistoryRepository = orderHistoryRepository;
+        this.orderMapper = orderMapper;
     }
 
     @Transactional
@@ -133,8 +139,9 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.save(order);
 
         // Savatni tozalash
-//        cart.getCartItems().clear(); // Savat ichidagi elementlarni tozalash
-//        cartRepository.save(cart);   // Savatni saqlash
+        cart.getCartItems().clear(); // Savat ichidagi elementlarni tozalash
+
+        cartRepository.save(cart);   // Savatni saqlash
         cartRepository.deleteById(cartId);
         // Loglash
         log.info("Savatchadan buyurtma yaratildi: foydalanuvchi ID = {}, buyurtma ID = {}, umumiy miqdor = {}",
@@ -249,5 +256,15 @@ public class OrderServiceImpl implements OrderService {
                 order.getTotalAmount(),
                 OrderStatus.valueOf(order.getOrderStatus()));
     }
-
+    @Override
+    public boolean saveToHistory(Long orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new IllegalArgumentException("Buyurtma topilmadi: ID = " + orderId));
+       if (order.getOrderStatus().equals("COMPLETED")){
+           OrderHistory history = orderMapper.orderToOrderHistory(order);
+           orderHistoryRepository.save(history);
+           return true;
+       }
+       return false;
+    }
 }
