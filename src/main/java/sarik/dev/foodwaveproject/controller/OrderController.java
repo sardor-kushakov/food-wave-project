@@ -69,4 +69,5 @@ public class OrderController {
         orderService.softDeleteOrderById(orderId);
         return ResponseEntity.ok("Buyurtma soft delete qilindi.");
     }
+
 }
