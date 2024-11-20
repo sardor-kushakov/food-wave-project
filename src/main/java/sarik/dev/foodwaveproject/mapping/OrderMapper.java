@@ -1,21 +1,19 @@
 package sarik.dev.foodwaveproject.mapping;
 
-import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.factory.Mappers;
 import sarik.dev.foodwaveproject.entity.Order;
 import sarik.dev.foodwaveproject.entity.OrderHistory;
-import sarik.dev.foodwaveproject.entity.OrderItem;
 
-import java.util.List;
-
-@Mapper(componentModel = "spring", uses = OrderItemMapper.class)
+@Mapper(componentModel = "spring")
 public interface OrderMapper {
-
-    @Mapping(target = "saveTime", expression = "java(java.time.LocalDateTime.now())")
-    @Mapping(target = "orderItems", source = "orderItems")
+    @Mapping(source = "orderId", target = "orderId")
+    @Mapping(source = "email", target = "email")
+    @Mapping(source = "user", target = "user")
+    @Mapping(source = "orderItems", target = "orderItems")
+    @Mapping(source = "orderDate", target = "orderDate")
+    @Mapping(source = "payment", target = "payment")
+    @Mapping(source = "totalAmount", target = "totalAmount")
     OrderHistory orderToOrderHistory(Order order);
-
-    @IterableMapping(qualifiedByName = "orderItemToOrderItemHistory")
-    List<OrderItem> mapOrderItems(List<OrderItem> orderItems);
 }

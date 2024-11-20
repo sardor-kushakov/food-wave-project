@@ -15,7 +15,9 @@ import sarik.dev.foodwaveproject.dto.orderItemDto.OrderItemDto;
 import sarik.dev.foodwaveproject.entity.*;
 import sarik.dev.foodwaveproject.entity.auth.AuthUser;
 import sarik.dev.foodwaveproject.enums.OrderStatus;
+import sarik.dev.foodwaveproject.mapping.OrderMapper;
 import sarik.dev.foodwaveproject.repository.CartRepository;
+import sarik.dev.foodwaveproject.repository.OrderHistoryRepository;
 import sarik.dev.foodwaveproject.repository.OrderRepository;
 import sarik.dev.foodwaveproject.repository.PaymentRepository;
 import sarik.dev.foodwaveproject.service.OrderService;
@@ -33,14 +35,18 @@ public class OrderServiceImpl implements OrderService {
     private final PaymentRepository paymentRepository;
     private final CartRepository cartRepository;
     private final SessionUser sessionUser;
+    private final OrderHistoryRepository orderHistoryRepository;
+    private final OrderMapper orderMapper;
 
     public OrderServiceImpl(OrderRepository orderRepository,
                             PaymentRepository paymentRepository,
-                            CartRepository cartRepository, SessionUser sessionUser) {
+                            CartRepository cartRepository, SessionUser sessionUser, OrderHistoryRepository orderHistoryRepository, OrderMapper orderMapper) {
         this.orderRepository = orderRepository;
         this.paymentRepository = paymentRepository;
         this.cartRepository = cartRepository;
         this.sessionUser = sessionUser;
+        this.orderHistoryRepository = orderHistoryRepository;
+        this.orderMapper = orderMapper;
     }
 
     @Transactional
@@ -151,7 +157,8 @@ public class OrderServiceImpl implements OrderService {
         // Savatni tozalash
 //        cart.getCartItems().clear(); // Savat ichidagi elementlarni tozalash
 //        cartRepository.save(cart);   // Savatni saqlash
-        cartRepository.deleteById(cartId);
+//        cartRepository.deleteById(cartId);
+
         // Loglash
         log.info("Savatchadan buyurtma yaratildi: foydalanuvchi ID = {}, buyurtma ID = {}, umumiy miqdor = {}",
                 user.getId(), order.getOrderId(), totalAmount);
@@ -248,6 +255,10 @@ public class OrderServiceImpl implements OrderService {
 
         String oldStatus = order.getOrderStatus();
         order.setOrderStatus(nextStatus.name());
+        if (nextStatus.name().equals(OrderStatus.COMPLETED.name())) {
+            saveToHistory(orderId);
+            softDeleteOrderById(orderId);
+        }
         orderRepository.save(order);
 
         log.info("Buyurtma holati o'zgartirildi: Order ID = {}, Oldingi holat = {}, Yangi holat = {}, O'zgartiruvchi foydalanuvchi = {}",
@@ -302,6 +313,18 @@ public class OrderServiceImpl implements OrderService {
         }
         orderRepository.deleteById(orderId);
         log.info("Buyurtma o'chirildi: ID = {}", orderId);
+    }
+
+    @Override
+    public boolean saveToHistory(Long orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new IllegalArgumentException("Buyurtma topilmadi: ID = " + orderId));
+        if (order.getOrderStatus().equals("COMPLETED")){
+            OrderHistory history = orderMapper.orderToOrderHistory(order);
+            orderHistoryRepository.save(history);
+            return true;
+        }
+        return false;
     }
 
 

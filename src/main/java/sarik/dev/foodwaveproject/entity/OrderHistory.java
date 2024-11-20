@@ -23,7 +23,6 @@ public class OrderHistory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long orderId;
 
-    @Email
     @Column(nullable = false)
     private String email;
 
@@ -31,8 +30,8 @@ public class OrderHistory {
     @JoinColumn(name = "user_id", nullable = false)
     private AuthUser user; // Session user assignment
 
-    @OneToMany(mappedBy = "order", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    private List<OrderItem> orderItems;
+    @OneToMany(mappedBy = "orderHistory", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<OrderItemHistory> orderItems; // OrderItemHistory ga o'zgartirish
 
     private LocalDate orderDate;
 
@@ -41,6 +40,4 @@ public class OrderHistory {
     private Payment payment;
 
     private Long totalAmount;
-
-    private LocalDateTime saveTime = LocalDateTime.now();
 }
