@@ -7,14 +7,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import sarik.dev.foodwaveproject.dto.productDto.CreateProductDto;
 import sarik.dev.foodwaveproject.dto.productDto.ProductResponseDto;
@@ -55,6 +48,14 @@ public class ProductController {
     public ResponseEntity<ProductResponseDto> addProduct(@Valid @RequestBody CreateProductDto dto) {
         ProductResponseDto createdProduct = productService.createProduct(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdProduct);
+    }
+
+    @GetMapping("/search-by-name")
+    @Transactional
+    public ResponseEntity<ProductResponseDto> searchByName(@RequestParam String name) {
+        Optional<Product> product = productService.getByName(name);
+        return product.map(value -> ResponseEntity.ok(productMapper.toProductResponseDto(value)))
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found with name: " + name));
     }
 
     @GetMapping
@@ -115,6 +116,7 @@ public class ProductController {
         Product updatedProduct = productService.updateProductDiscount(dto, existingProduct);
         return ResponseEntity.ok(productMapper.toProductResponseDto(updatedProduct));
     }
+
     @GetMapping("/popularity")
     public ResponseEntity<List<ProductResponseDto>> getPopularProducts() {
         // ProductService orqali eng mashhur mahsulotlarni olish

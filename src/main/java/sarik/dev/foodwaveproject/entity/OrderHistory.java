@@ -1,5 +1,6 @@
 package sarik.dev.foodwaveproject.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
@@ -29,7 +30,7 @@ public class OrderHistory {
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private AuthUser user; // Session user assignment
-
+    @JsonIgnore
     @OneToMany(mappedBy = "orderHistory", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<OrderItemHistory> orderItems; // OrderItemHistory ga o'zgartirish
 

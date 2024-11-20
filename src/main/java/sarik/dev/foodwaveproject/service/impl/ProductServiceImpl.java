@@ -4,10 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import sarik.dev.foodwaveproject.dto.categoryDto.CategoryResponseDTO;
-import sarik.dev.foodwaveproject.dto.productDto.CreateProductDto;
-import sarik.dev.foodwaveproject.dto.productDto.ProductResponseDto;
-import sarik.dev.foodwaveproject.dto.productDto.UpdateDiscountProductDto;
-import sarik.dev.foodwaveproject.dto.productDto.UpdateIsPresentProductDto;
+import sarik.dev.foodwaveproject.dto.productDto.*;
 import sarik.dev.foodwaveproject.entity.Category;
 import sarik.dev.foodwaveproject.entity.Product;
 import sarik.dev.foodwaveproject.exception.ResourceNotFoundException;
@@ -66,6 +63,11 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public Optional<Product> getByName(String name) {
+        return productRepository.findByProductName(name);
+    }
+
+    @Override
     public Product updateProduct(CreateProductDto dto, Product product) {
         Category category = categoryRepository.findByCategoryName(dto.getCategory().getName())
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found with name: " + dto.getCategory().getName()));
@@ -94,7 +96,7 @@ public class ProductServiceImpl implements ProductService {
         if (dto == null || product == null) {
             throw new IllegalArgumentException("Invalid input data");
         }
-        if (product.getPrice()<dto.getDiscount()) {
+        if (product.getPrice() < dto.getDiscount()) {
             throw new IllegalArgumentException("Discount must be small than product price");
         }
         product.setDiscount(dto.getDiscount());

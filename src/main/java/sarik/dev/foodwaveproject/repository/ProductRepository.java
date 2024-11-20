@@ -7,10 +7,13 @@ import sarik.dev.foodwaveproject.entity.Category;
 import sarik.dev.foodwaveproject.entity.Product;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product , Long> {
     List<Product> findByCategory(Category category);
+
+    Optional<Product> findByProductName(String name);
 
 //    @Override
 //    @Query(value = "select p. , p.description , p.price , p.ingredients , p.image , p.discount  from Product p")
