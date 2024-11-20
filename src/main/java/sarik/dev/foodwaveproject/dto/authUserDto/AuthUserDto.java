@@ -12,7 +12,7 @@ import java.io.Serializable;
  * DTO for {@link sarik.dev.foodwaveproject.entity.auth.AuthUser}
  */
 
-public record AuthUserDTO(
+public record AuthUserDto(
     @Size(message = "First Name must be between 5 and 30 characters long", min = 5, max = 20)
     @Pattern(message = "First Name must not contain numbers or special characters", regexp = "^[a-zA-Z]*$")
     String name,
