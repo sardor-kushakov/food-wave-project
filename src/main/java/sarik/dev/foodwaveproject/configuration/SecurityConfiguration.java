@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -15,7 +16,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
@@ -45,7 +45,7 @@ public class SecurityConfiguration {
             "/swagger-ui/**",
             "/swagger-resources/**",
             "/v3/api-docs/**",
-            "/api/oauth2/**"
+            "/api/oauth2/verify-token"
     };
 
     public SecurityConfiguration(ObjectMapper objectMapper, UserDetailsService userDetailsService, JwtTokenUtil jwtTokenUtil, OTPAuthenticationProvider otpAuthenticationProvider) {
@@ -59,7 +59,7 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))  // Enable CORS configuration
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(httpReqConf ->
                         httpReqConf.requestMatchers(WHITE_LIST).permitAll()
                                 .anyRequest().authenticated()
@@ -67,22 +67,6 @@ public class SecurityConfiguration {
                 .sessionManagement(sessionConf -> sessionConf.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(exHanConfig -> exHanConfig.authenticationEntryPoint(authenticationEntryPoint())
                         .accessDeniedHandler(accessDeniedHandler()))
-                .oauth2Login(oauth2 -> oauth2
-                        .successHandler((request, response, authentication) -> {
-                            OAuth2AuthenticationToken authToken = (OAuth2AuthenticationToken) authentication;
-                            String email = authToken.getPrincipal().getAttribute("email");
-                            String name = authToken.getPrincipal().getAttribute("name");
-
-                            // Generate JWT token
-                            String jwtToken = jwtTokenUtil.generateToken(email);
-
-                            // Send token as JSON response
-                            response.setContentType("application/json");
-                            response.setCharacterEncoding("UTF-8");
-                            objectMapper.writeValue(response.getWriter(),
-                                    new OAuth2LoginResponse(jwtToken, email, name));
-                        })
-                )
                 .addFilterBefore(new JwtTokenFilter(jwtTokenUtil, userDetailsService), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
@@ -107,18 +91,17 @@ public class SecurityConfiguration {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
 
-        // Allow specific origins (frontend URLs)
         corsConfiguration.setAllowedOriginPatterns(List.of(
-                "http://localhost:8080",  // Frontend
-                "http://localhost:9090"   // Backend
+                "http://localhost:8080",
+                "http://localhost:9090"
         ));
 
-        corsConfiguration.setAllowedHeaders(List.of("*")); // Allow all headers
-        corsConfiguration.setAllowedMethods(List.of("*")); // Allow all HTTP methods (GET, POST, PUT, DELETE, etc.)
-        corsConfiguration.setAllowCredentials(true);        // Allow cookies/authorization headers
+        corsConfiguration.setAllowedHeaders(List.of("*"));
+        corsConfiguration.setAllowedMethods(List.of("*"));
+        corsConfiguration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", corsConfiguration);  // Apply to all endpoints
+        source.registerCorsConfiguration("/**", corsConfiguration);
 
         return source;
     }
@@ -155,6 +138,5 @@ public class SecurityConfiguration {
         return new BCryptPasswordEncoder();
     }
 
-    private record OAuth2LoginResponse(String token, String email, String name) {}
 
 }

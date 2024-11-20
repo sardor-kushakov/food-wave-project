@@ -39,7 +39,7 @@ public class AuthController {
     public ResponseEntity<String> register(@RequestBody CreateAuthUserDTO dto) {
         authUserServiceImpl.registerUser(dto);
         otpService.sendOtp(dto.email());
-        return ResponseEntity.ok("OTP yuborildi. Iltimos, tekshiring.");
+        return ResponseEntity.status(201).build();
 
     }
 
@@ -48,7 +48,7 @@ public class AuthController {
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(loginRequest.email(), loginRequest.password());
         authenticationManager.authenticate(authentication);
         otpService.sendOtp(loginRequest.email());
-        return ResponseEntity.ok("OTP yuborildi. Iltimos, tekshiring.");
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/verify-otp")
@@ -56,9 +56,9 @@ public class AuthController {
         boolean isOtpValid = otpService.validateOTP(otpRequest.getEmail(), otpRequest.getOtpCode());
         if (isOtpValid) {
             String token = jwtTokenUtil.generateToken(otpRequest.getEmail());
-            return ResponseEntity.ok("Tasdiqlash muvaffaqiyatli. Token: " + token);
+            return ResponseEntity.ok(token);
         } else {
-            return ResponseEntity.status(401).body("Noto'g'ri yoki muddati o'tgan OTP.");
+            return ResponseEntity.status(401).build();
         }
     }
 

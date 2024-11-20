@@ -66,6 +66,7 @@ public class OtpService {
         }
     }
 
+    @Transactional
     public boolean validateOTP(String email, String otpCode) {
         /*
         return otpRepository.existsByCodeAndEmailNotExpired(email,otpCode,LocalDateTime.now()).i;

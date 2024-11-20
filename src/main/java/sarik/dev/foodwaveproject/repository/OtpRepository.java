@@ -6,7 +6,6 @@ import sarik.dev.foodwaveproject.entity.Otp;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
-
 public interface OtpRepository extends JpaRepository<Otp, Long> {
 
     Optional<Otp> findByEmail(String email);

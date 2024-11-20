@@ -1,9 +1,14 @@
 package sarik.dev.foodwaveproject.service.authUser;
 
 import jakarta.persistence.EntityNotFoundException;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import sarik.dev.foodwaveproject.configuration.JwtTokenUtil;
 import sarik.dev.foodwaveproject.dto.authUserDto.AuthUserResponseDTO;
 import sarik.dev.foodwaveproject.dto.authUserDto.CreateAuthUserDTO;
 import sarik.dev.foodwaveproject.dto.authUserDto.UpdateAuthUserDTO;
@@ -13,6 +18,7 @@ import sarik.dev.foodwaveproject.mapper.AuthUserMapper;
 import sarik.dev.foodwaveproject.repository.AuthUserRepository;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -21,11 +27,17 @@ public class AuthUserServiceImpl implements AuthUserService {
     private final AuthUserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthUserMapper authUserMapper;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final JwtTokenUtil jwtToken;
+    private final AuthUserRepository authUserRepository;
 
-    public AuthUserServiceImpl(AuthUserRepository userRepository, PasswordEncoder passwordEncoder, AuthUserMapper authUserMapper) {
+    public AuthUserServiceImpl(AuthUserRepository userRepository, PasswordEncoder passwordEncoder, AuthUserMapper authUserMapper, BCryptPasswordEncoder bCryptPasswordEncoder, JwtTokenUtil jwtToken, AuthUserRepository authUserRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authUserMapper = authUserMapper;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.jwtToken = jwtToken;
+        this.authUserRepository = authUserRepository;
     }
 
 
@@ -56,8 +68,8 @@ public class AuthUserServiceImpl implements AuthUserService {
     @Transactional
     public AuthUserResponseDTO getUserById(Long id) {
         AuthUser user = userRepository.findById(id)
-                .orElseThrow(()-> new EntityNotFoundException("user not found"));
-       return authUserMapper.toResponseDTO(user);
+                .orElseThrow(() -> new EntityNotFoundException("user not found"));
+        return authUserMapper.toResponseDTO(user);
     }
 
     @Override
@@ -71,7 +83,7 @@ public class AuthUserServiceImpl implements AuthUserService {
     @Transactional
     public AuthUserResponseDTO updateUser(Long id, UpdateAuthUserDTO updateAuthUserDTO) {
         AuthUser user = userRepository.findById(id)
-                .orElseThrow(()-> new EntityNotFoundException("user not found"));
+                .orElseThrow(() -> new EntityNotFoundException("user not found"));
         AuthUser authUser = authUserMapper.partialUpdateAuthUser(updateAuthUserDTO, user);
         return authUserMapper.toResponseDTO(authUser);
     }
@@ -84,5 +96,42 @@ public class AuthUserServiceImpl implements AuthUserService {
         }
         userRepository.deleteById(id);
     }
+
+    @Transactional
+    public String processUser(Map<String, String> userInfo) {
+        String email = userInfo.get("email");
+
+
+        Optional<AuthUser> existingUser = userRepository.findByEmail(email);
+
+        if (existingUser.isPresent()) {
+            return login(existingUser.get());
+        } else {
+            AuthUser newUser = new AuthUser();
+            newUser.setEmail(userInfo.get("email"));
+            newUser.setName(userInfo.get("name"));
+
+            authUserRepository.save(newUser);
+
+            return login(newUser);
+        }
+    }
+
+    @Transactional
+    public String login(AuthUser user) {
+
+        String token = jwtToken.generateToken(user.getEmail());
+
+        UsernamePasswordAuthenticationToken authentication =
+                new UsernamePasswordAuthenticationToken(
+                        user.getEmail(),
+                        null);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        return token;
+    }
+
+
+
+
 }
 
