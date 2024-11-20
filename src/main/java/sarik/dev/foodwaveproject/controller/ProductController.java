@@ -49,13 +49,9 @@ public class ProductController {
         ProductResponseDto createdProduct = productService.createProduct(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdProduct);
     }
-
-    @GetMapping("/search-by-name")
-    @Transactional
-    public ResponseEntity<ProductResponseDto> searchByName(@RequestParam String name) {
-        Optional<Product> product = productService.getByName(name);
-        return product.map(value -> ResponseEntity.ok(productMapper.toProductResponseDto(value)))
-                .orElseThrow(() -> new ResourceNotFoundException("Product not found with name: " + name));
+    @GetMapping("/search")
+    public List<ProductResponseDto> searchProducts(@RequestParam String name) {
+        return productService.searchByName(name);
     }
 
     @GetMapping

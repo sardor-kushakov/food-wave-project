@@ -19,5 +19,5 @@ public interface ProductService {
     void deleteProductById(Long id);
     List<ProductResponseDto> getProductsByCategoryName(String categoryName);
     List<ProductResponseDto> getProductsByPopularity();
-    Optional<Product> getByName(String name);
+    List<ProductResponseDto> searchByName(String name);
 }

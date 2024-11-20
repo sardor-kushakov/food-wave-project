@@ -62,10 +62,6 @@ public class ProductServiceImpl implements ProductService {
         return productRepository.findById(id);
     }
 
-    @Override
-    public Optional<Product> getByName(String name) {
-        return productRepository.findByProductName(name);
-    }
 
     @Override
     public Product updateProduct(CreateProductDto dto, Product product) {
@@ -157,5 +153,10 @@ public class ProductServiceImpl implements ProductService {
                 })
                 .filter(productResponseDto -> productResponseDto != null)  // Null qiymatlarni filtrlash
                 .collect(Collectors.toList());  // Barcha ProductResponseDto larni ro'yxatga yig'ish
+    }
+
+    @Override
+    public List<ProductResponseDto> searchByName(String name) {
+        return productMapper.toProductResponseDtoList(productRepository.findByProductNameContainingIgnoreCase(name));
     }
 }
