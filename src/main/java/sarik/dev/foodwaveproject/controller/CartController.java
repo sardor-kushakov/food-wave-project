@@ -27,9 +27,16 @@ public class CartController {
         return new ResponseEntity<>(cart, HttpStatus.CREATED);
     }
 
+
     @PutMapping
     public ResponseEntity<CartResponseDto> updateCart(@Valid @RequestBody CartUpdateDto cartUpdateDto) {
         CartResponseDto cart = cartService.updateCart(cartUpdateDto);
+        return new ResponseEntity<>(cart, HttpStatus.OK);
+    }
+
+    @PutMapping("/update-my-cart")
+    ResponseEntity<CartResponseDto> updateMyCart(@Valid @RequestBody CartUpdateDto cartUpdateDto) {
+        CartResponseDto cart = cartService.updateMyCart(cartUpdateDto);
         return new ResponseEntity<>(cart, HttpStatus.OK);
     }
 
@@ -39,9 +46,22 @@ public class CartController {
         return new ResponseEntity<>(carts, HttpStatus.OK);
     }
 
+    @GetMapping("/my-carts")
+    public ResponseEntity<List<CartResponseDto>> createMyCarts() {
+        List<CartResponseDto> carts = cartService.getMyCarts();
+        return new ResponseEntity<>(carts, HttpStatus.OK);
+    }
+
+
     @DeleteMapping("/{cartId}")
     public ResponseEntity<Void> deleteCartById(@PathVariable Long cartId) {
         cartService.deleteCartById(cartId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @DeleteMapping("/delete-my-cart/{cartId}")
+    public ResponseEntity<Void> deleteMyCart(@PathVariable Long cartId) {
+        cartService.deleteMyCart(cartId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
