@@ -39,7 +39,7 @@ public class AuthController {
     public ResponseEntity<String> register(@RequestBody CreateAuthUserDTO dto) {
         authUserServiceImpl.registerUser(dto);
         otpService.sendOtp(dto.email());
-        return ResponseEntity.ok("OTP yuborildi. Iltimos, tekshiring.");
+        return ResponseEntity.status(201).build();
 
     }
 
@@ -48,7 +48,7 @@ public class AuthController {
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(loginRequest.email(), loginRequest.password());
         authenticationManager.authenticate(authentication);
         otpService.sendOtp(loginRequest.email());
-        return ResponseEntity.ok("OTP yuborildi. Iltimos, tekshiring.");
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/verify-otp")
