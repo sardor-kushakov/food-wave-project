@@ -2,6 +2,7 @@ package sarik.dev.foodwaveproject.service.otp;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import jakarta.transaction.Transactional;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -11,6 +12,7 @@ import sarik.dev.foodwaveproject.repository.OtpRepository;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 public class OtpService {
@@ -24,24 +26,27 @@ public class OtpService {
         this.otpRepository = otpRepository;
     }
 
-    public String sendOtp(String email) {
-        String otpCode = String.format("%06d", new Random().nextInt(999999));
+    @Transactional
+    public void sendOtp(String email) {
+        String otpCode = String.format("%06d", ThreadLocalRandom.current().nextInt(1000000));
         LocalDateTime expirationTime = LocalDateTime.now().plusMinutes(5);
 
-
-        otpRepository.deleteByEmail(email);
-
-
-        Otp otp = new Otp(email, otpCode, expirationTime);
-        otpRepository.save(otp);
-
+        Optional<Otp> existingOtp = otpRepository.findByEmail(email);
+        if (existingOtp.isPresent()) {
+            Otp otp = existingOtp.get();
+            otp.setOtpCode(otpCode);
+            otp.setExpirationTime(expirationTime);
+            otpRepository.save(otp);
+        } else {
+            Otp otp = new Otp(email, otpCode, expirationTime);
+            otpRepository.save(otp);
+        }
 
         sendEmail(email, otpCode);
-
-        return otpCode;
     }
 
-    private void sendEmail(String email, String otpCode) {
+    @Transactional
+    public void sendEmail(String email, String otpCode) {
         try {
 
             MimeMessage mimeMessage = mailSender.createMimeMessage();

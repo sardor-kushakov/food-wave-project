@@ -75,7 +75,6 @@ public class CartServiceImpl implements CartService {
             if (cartItemOpt.isPresent()) {
                 CartItem cartItem = cartItemOpt.get();
                 cartItem.setQuantity(updateDto.getQuantity());
-                cartItem.setDiscount(updateDto.getDiscountSom() * 100); // So'mdan tiyinga aylantirish
                 cartItem.setProductPrice(cartItem.getProduct().getPrice() - cartItem.getDiscount());
             }
         }
